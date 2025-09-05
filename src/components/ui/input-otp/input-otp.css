@@ -1,0 +1,22 @@
+:root {
+    --ring: 240 5% 64.9%;
+    --color-cursor: black
+}
+
+@keyframes caret-blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+}
+
+.animate-caret-blink {
+    display: inline-block;
+    height: 1em;
+    animation: caret-blink 1s step-end infinite;
+}

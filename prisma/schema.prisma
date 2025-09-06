@@ -15,21 +15,69 @@ datasource db {
 }
 
 model images {
-  id      String  @id @default(auto()) @map("_id") @db.ObjectId
-  file_id String
-  url     String
-  userId  String? @unique @db.ObjectId
-  shopId  String? @unique @db.ObjectId
-  users   users?  @relation(fields: [userId], references: [id])
+  id     String  @id @default(auto()) @map("_id") @db.ObjectId
+  fileId String  @map("file_id")
+  url    String
+  userId String? @unique @map("user_id") @db.ObjectId
+  shopId String? @unique @map("shop_id") @db.ObjectId
+  users  users?  @relation(fields: [userId], references: [id])
+  shops  shops?  @relation(fields: [shopId], references: [id])
 }
 
 model users {
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  email       String        @unique
+  password    String?
+  following   String[]
+  avatar      images?
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+  shopReviews shopReviews[]
+}
+
+model shopReviews {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  name      String
-  email     String   @unique
-  password  String?
-  following String[]
-  avatar    images?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  userId    String   @map("user_id") @db.ObjectId
+  user      users    @relation(fields: [userId], references: [id])
+  rating    Float
+  review    String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  shopId    String?  @map("shopId") @db.ObjectId
+  shops     shops?   @relation(fields: [shopId], references: [id])
+
+  @@map("shop_reviews")
+}
+
+model shops {
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  bio          String?
+  category     String
+  avatar       images?
+  coverBanner  String?
+  address      String
+  openingHours String?       @map("opening_hours")
+  website      String?
+  socialLinks  Json[]        @map("social_links")
+  ratings      Float         @default(0)
+  reviews      shopReviews[]
+  sellerId     String        @unique @map("seller_id") @db.ObjectId
+  sellers      sellers       @relation(fields: [sellerId], references: [id])
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+}
+
+model sellers {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  email       String   @unique
+  phoneNumber String   @map("phone_number")
+  country     String
+  password    String
+  stripeId    String?  @map("stripe_id")
+  shop        shops?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
 }

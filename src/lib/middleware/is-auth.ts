@@ -6,6 +6,7 @@ export const isAuth = async (req: NextRequest) => {
     try {
         const token =
             req.cookies.get("access_token")?.value ||
+            req.cookies.get("seller-access_token")?.value ||
             req.headers.get("authorization")?.split(" ")[1];
 
         if (!token) {
@@ -21,7 +22,12 @@ export const isAuth = async (req: NextRequest) => {
             throw new Error("Unauthenticated! Invalid token.");
         }
 
-        const account = await prisma.users.findUnique({ where: { id: decoded.id } });
+        let account;
+        if (decoded.role === "user") {
+            account = await prisma.users.findUnique({ where: { id: decoded.id } });
+        } else if (decoded.role === "seller") {
+            account = await prisma.sellers.findUnique({ where: { id: decoded.id }, include: { shop: true } });
+        }
 
         if (!account) {
             throw new Error("User not found!");

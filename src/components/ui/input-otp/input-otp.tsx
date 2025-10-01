@@ -2,10 +2,11 @@ import "./input-otp.css"
 
 import React, { useContext, createContext, useState, useRef } from "react";
 import { BaseInputOTPProps, InputOTPContextType, InputOTPProps, InputOTPSlotProps } from "./props";
+import { cn } from "@/lib/utils/cn";
 
 const InputOTPContext = createContext<InputOTPContextType | null>(null);
 
-export const InputOTP = ({ children, maxLength = 6, className, onChange }: InputOTPProps) => {
+export const InputOTP = ({ children, maxLength = 6, className, onChange, ...props }: InputOTPProps) => {
   const [otp, setOtp] = useState<string[]>(Array(maxLength).fill(""));
   const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -31,8 +32,12 @@ export const InputOTP = ({ children, maxLength = 6, className, onChange }: Input
   return (
     <InputOTPContext.Provider value={{ slots, handleChange, maxLength, isFocused, setIsFocused }}>
       <div
-        className={`flex items-center gap-2 select-none relative${className ? ` ${className}` : ''}`}
+        className={cn(
+          "flex items-center gap-2 select-none relative",
+          className ? className : ''
+        )}
         onClick={() => inputRef.current?.focus()}
+        {...props}
       >
         {children}
         <input
@@ -50,8 +55,8 @@ export const InputOTP = ({ children, maxLength = 6, className, onChange }: Input
   );
 };
 
-export const InputOTPGroup = ({ children }: BaseInputOTPProps) => {
-  return <div className="flex items-center">{children}</div>;
+export const InputOTPGroup = ({ children, ...props }: BaseInputOTPProps) => {
+  return <div className="flex items-center" {...props}>{children}</div>;
 };
 
 export const InputOTPSlot = ({ index, className }: InputOTPSlotProps) => {

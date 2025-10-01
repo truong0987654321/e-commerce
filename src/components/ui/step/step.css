@@ -1,3 +1,28 @@
 :root {
     --primary-color: #44b3e3;
 }
+
+.progress {
+    position: relative;
+    overflow: hidden;
+}
+
+.progress::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0%;
+    animation: grow 1.25s forwards;
+}
+
+@keyframes grow {
+    from {
+        width: 0%;
+    }
+
+    to {
+        width: 100%;
+    }
+}

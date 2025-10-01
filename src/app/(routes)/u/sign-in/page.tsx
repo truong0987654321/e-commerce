@@ -76,14 +76,14 @@ export default function SignInPage() {
                     </AuthForm>
                 </AuthBody>
             </AuthCard>
-            <AuthFooter >
+            <AuthFooter>
                 <AuthFooterForgotPassword
                     text="Forgot Password"
-                    linkHref={ROUTES.AUTH.USER_FORGOT_PASSWORD}
+                    href={ROUTES.AUTH.USER_FORGOT_PASSWORD}
                 />
                 <AuthFooterTextWithLink
                     linkText="Sign Up"
-                    linkHref={ROUTES.AUTH.USER_SIGN_UP}
+                    href={ROUTES.AUTH.USER_SIGN_UP}
                 />
             </AuthFooter>
         </AuthContainer>

@@ -1,0 +1,14 @@
+.card__skeleton {
+    background: linear-gradient(90deg,
+            #b9b9b9e6 0%,
+            #ffffff 50%,
+            #b9b9b9e6 100%);
+    background-size: 200% 100%;
+    animation: shimmer 1.6s infinite linear;
+}
+
+@keyframes shimmer {
+    100% {
+        background-position: -200% 0;
+    }
+}

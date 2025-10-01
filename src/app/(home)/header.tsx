@@ -1,7 +1,7 @@
 "use client";
 
 import { ROUTES } from "@/constants/routes";
-import { useUser } from "@/hooks/useUser";
+import { useUser } from "@/hooks/use-user";
 import { Heart, Search, ShoppingCart, UserRound } from "lucide-react";
 import Link from "next/link";
 import { HeaderBottom } from "./header-bottom";

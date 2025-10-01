@@ -13,10 +13,21 @@ let isRefreshing = false;
 let refreshSubscribers: (() => void)[] = [];
 
 const handleLogout = () => {
-    if (typeof window !== "undefined" && window.location.pathname !== ROUTES.AUTH.USER_SIGN_IN) {
-        window.location.href = ROUTES.AUTH.USER_SIGN_IN;
+    if (typeof window === "undefined") return;
+
+    const currentPath = window.location.pathname;
+
+    if (currentPath.startsWith("/s")) {
+        if (currentPath !== ROUTES.AUTH.SELLER_SIGN_IN) {
+            window.location.href = ROUTES.AUTH.SELLER_SIGN_IN;
+        }
+    } else {
+        if (currentPath !== ROUTES.AUTH.USER_SIGN_IN) {
+            window.location.href = ROUTES.AUTH.USER_SIGN_IN;
+        }
     }
 };
+
 
 const subscribeTokenRefresh = (cb: () => void) => {
     refreshSubscribers.push(cb);

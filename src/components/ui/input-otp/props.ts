@@ -1,10 +1,9 @@
+import React from "react";
 
-export interface BaseInputOTPProps {
-    children?: React.ReactNode;
-    className?: string;
+export interface BaseInputOTPProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
-export interface InputOTPProps extends BaseInputOTPProps {
+export interface InputOTPProps extends Omit<BaseInputOTPProps, "onChange"> {
     value?: InputOTPContextType;
     maxLength: number;
     onChange?: (otp: string) => void;

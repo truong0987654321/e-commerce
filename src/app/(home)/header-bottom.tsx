@@ -2,7 +2,7 @@
 
 import { navItems } from "@/constants/nav-items";
 import { ROUTES } from "@/constants/routes";
-import { useUser } from "@/hooks/useUser";
+import { useUser } from "@/hooks/use-user";
 import { cn } from "@/lib/utils/cn";
 import { AlignLeft, ChevronDown, Heart, ShoppingCart, UserRound } from "lucide-react";
 import Link from "next/link";

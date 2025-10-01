@@ -1,15 +1,10 @@
 
-export interface AuthProps {
-    children?: React.ReactNode;
-    className?: string
-}
+export interface AuthProps extends React.HTMLAttributes<HTMLDivElement> { }
 
-export interface AuthButtonProps extends AuthProps {
+export interface AuthButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     label: string;
-    disabled?: boolean;
     loadingLabel?: string;
     icon?: React.ReactNode;
-    onClick?: () => void;
 }
 
 export interface AuthFeedbackProps extends AuthProps {
@@ -18,22 +13,15 @@ export interface AuthFeedbackProps extends AuthProps {
     text?: string;
 }
 
-export interface AuthInputProps extends AuthProps {
+export interface AuthInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
     type: string;
     label: string;
-    placeholder?: string;
-    pattern?: string;
-    value: string;
     inputRef?: React.RefObject<HTMLInputElement | null>;
-    onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
     onFocusChange?: (isFocused: boolean) => void;
-    onFocus?: () => void;
-    onBlur?: () => void;
 }
 
-export interface AuthFooterProps extends AuthProps {
+export interface AuthFooterProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
     linkText?: string;
-    linkHref?: string;
     text?: string;
 }
 
@@ -42,11 +30,8 @@ export interface AuthHeaderProps {
     description?: string
 }
 
-export interface ContinueWithButtonProps {
+export interface ContinueWithButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     label: string;
     icon: React.ReactNode;
-    onClick?: () => void;
 }
-export interface AuthFormProps extends AuthProps {
-    onSubmit?: (e: React.FormEvent<HTMLFormElement>) => void;
-}
+export interface AuthFormProps extends React.FormHTMLAttributes<HTMLFormElement> { }

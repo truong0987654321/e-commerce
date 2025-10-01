@@ -189,7 +189,7 @@ export default function SignUpPage() {
                     <AuthFooter>
                         <AuthFooterTextWithLink
                             linkText="Sign In"
-                            linkHref={ROUTES.AUTH.USER_SIGN_IN}
+                            href={ROUTES.AUTH.USER_SIGN_IN}
                             text="Already have an account?"
                         />
                     </AuthFooter>

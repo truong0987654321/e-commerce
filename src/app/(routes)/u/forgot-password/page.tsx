@@ -253,7 +253,7 @@ export default function ForgotPasswordPage() {
                 <AuthFooter >
                     <AuthFooterTextWithLink
                         linkText="Sign In"
-                        linkHref={ROUTES.AUTH.USER_SIGN_IN}
+                        href={ROUTES.AUTH.USER_SIGN_IN}
                         text="Go back to?"
                     />
                 </AuthFooter>

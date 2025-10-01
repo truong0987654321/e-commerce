@@ -5,22 +5,33 @@ import { AuthButtonProps, AuthFeedbackProps, AuthFooterProps, AuthFormProps, Aut
 import React, { createContext, useContext, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
-export const Close = ({ className }: { className?: string }) => {
+
+interface SvgProps extends React.SVGProps<SVGSVGElement> {
+    size?: number;
+}
+
+const Close = ({ size = 16, ...props }: SvgProps) => {
     return (
         <svg
-            className={className}
             fill="none" xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 10 10"
+            width={size}
+            height={size}
+            {...props}
         >
             <path d="M1.791.722a.756.756 0 0 0-1.07 1.07L3.932 5 .72 8.209a.756.756 0 1 0 1.07 1.07L5 6.068l3.209 3.21a.756.756 0 0 0 1.07-1.07L6.068 5l3.21-3.209a.756.756 0 1 0-1.07-1.07L5 3.932 1.791.72Z" fill="currentColor" />
         </svg>
     )
 }
-export const EyeSlash = () => {
+const EyeSlash = ({ size = 16, ...props }: SvgProps) => {
     return (
         <svg xmlns="http://www.w3.org/2000/svg"
             fill="currentColor"
-            viewBox="0 0 1280 1024">
+            viewBox="0 0 1280 1024"
+            width={size}
+            height={size}
+            {...props}
+        >
             <g id="icomoon-ignore">
             </g>
             <path fill="currentColor"
@@ -28,11 +39,15 @@ export const EyeSlash = () => {
         </svg>
     )
 }
-export const Eye = () => {
+const Eye = ({ size = 16, ...props }: SvgProps) => {
     return (
         <svg xmlns="http://www.w3.org/2000/svg"
             fill="currentColor"
-            viewBox="0 0 1152 1024">
+            viewBox="0 0 1152 1024"
+            width={size}
+            height={size}
+            {...props}
+        >
             <g id="icomoon-ignore">
             </g>
             <path fill="currentColor"
@@ -40,11 +55,15 @@ export const Eye = () => {
         </svg>
     )
 }
-export const CircleCheck = () => {
+const CircleCheck = ({ size = 16, ...props }: SvgProps) => {
     return (
         <svg xmlns="http://www.w3.org/2000/svg"
             fill="currentColor"
-            viewBox="0 0 1024 1024">
+            viewBox="0 0 1024 1024"
+            width={size}
+            height={size}
+            {...props}
+        >
             <g id="icomoon-ignore">
             </g>
             <path fill="currentColor"
@@ -53,11 +72,15 @@ export const CircleCheck = () => {
     )
 }
 
-export const CircleExclamation = () => {
+const CircleExclamation = ({ size = 16, ...props }: SvgProps) => {
     return (
         <svg xmlns="http://www.w3.org/2000/svg"
             fill="currentColor"
-            viewBox="0 0 1024 1024">
+            viewBox="0 0 1024 1024"
+            width={size}
+            height={size}
+            {...props}
+        >
             <g id="icomoon-ignore">
             </g>
             <path
@@ -67,27 +90,42 @@ export const CircleExclamation = () => {
 
     )
 }
-export const ImageEmpty = ({ className }: { className?: string }) => {
+const ImageEmpty = ({ size = 16, ...props }: SvgProps) => {
     return (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" className={className} style={{ opacity: .5 }}>
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 512 512"
+            width={size}
+            height={size}
+            {...props}
+        >
             <path d="M0 96C0 60.7 28.7 32 64 32l384 0c35.3 0 64 28.7 64 64l0 320c0 35.3-28.7 64-64 64L64 480c-35.3 0-64-28.7-64-64L0 96zM323.8 202.5c-4.5-6.6-11.9-10.5-19.8-10.5s-15.4 3.9-19.8 10.5l-87 127.6L170.7 297c-4.6-5.7-11.5-9-18.7-9s-14.2 3.3-18.7 9l-64 80c-5.8 7.2-6.9 17.1-2.9 25.4s12.4 13.6 21.6 13.6l96 0 32 0 208 0c8.9 0 17.1-4.9 21.2-12.8s3.6-17.4-1.4-24.7l-120-176zM112 192a48 48 0 1 0 0-96 48 48 0 1 0 0 96z" />
         </svg>
     )
 }
-export const AuthBody = ({ children, className }: AuthProps) => {
+export const AuthBody = ({ children, className, ...props }: AuthProps) => {
     return (
         <div
             className={cn(
                 "flex flex-col items-stretch justify-start gap-6",
                 className ? className : ""
             )}
+            {...props}
         >
             {children}
         </div>
     )
 }
 
-export const AuthButton = ({ disabled, label, loadingLabel = "Activating...", icon, onClick }: AuthButtonProps) => {
+export const AuthButton = ({
+    disabled,
+    className,
+    label,
+    loadingLabel = "Activating...",
+    icon,
+    onClick,
+    ...props
+}: AuthButtonProps) => {
     return (
         <button
             type="submit"
@@ -95,8 +133,10 @@ export const AuthButton = ({ disabled, label, loadingLabel = "Activating...", ic
             onClick={onClick}
             className={cn(
                 "m-0 p-[.375rem_.75rem] rounded-[.375rem] font-medium text-[.8125rem] bg-[var(--primary-color)] text-white shadow-[var(--color-shadow-heavy)] hover:opacity-[.8]",
-                disabled ? "cursor-not-allowed opacity-[.8]" : ""
+                disabled ? "cursor-not-allowed opacity-[.8]" : "",
+                className
             )}
+            {...props}
         >
             <span className="flex flex-row items-center justify-center">
 
@@ -120,9 +160,12 @@ export const AuthButton = ({ disabled, label, loadingLabel = "Activating...", ic
     )
 }
 
-export const AuthCard = ({ children }: AuthProps) => {
+export const AuthCard = ({ children, ...props }: AuthProps) => {
     return (
-        <div className="bg-white text-center rounded-lg relative z-[10] p-[2rem_2.5rem] shadow-[var(--color-shadow-light)]">
+        <div
+            className="bg-white text-center rounded-lg relative z-[10] p-[2rem_2.5rem] shadow-[var(--color-shadow-light)]"
+            {...props}
+        >
             <div className="flex flex-col items-stretch justify-start gap-6">
                 {children}
             </div>
@@ -130,22 +173,24 @@ export const AuthCard = ({ children }: AuthProps) => {
     )
 }
 
-export const AuthContainer = ({ children, className }: AuthProps) => {
+export const AuthContainer = ({ children, className, ...props }: AuthProps) => {
     return (
         <div
             className={cn(
                 "flex min-w-[25rem] flex-col items-center justify-center",
                 className ? className : "min-h-screen"
             )}
+            {...props}
         >
-            <div className="overflow-hidden [@media(min-width:25rem)]:w-[25rem]  w-full rounded-xl shadow-[var(--color-shadow-deep)]">
+            <div className="overflow-hidden [@media(min-width:25rem)]:w-[25rem]  w-full rounded-xl shadow-[var(--color-shadow-deep)]"
+            >
                 {children}
             </div>
         </div>
     )
 }
 
-export const AuthFeedback = ({ show, status, text }: AuthFeedbackProps) => {
+export const AuthFeedback = ({ show, status, text, ...props }: AuthFeedbackProps) => {
     if (!show || !text) return null;
     const error = status === "error"
     const success = status === "success"
@@ -154,6 +199,7 @@ export const AuthFeedback = ({ show, status, text }: AuthFeedbackProps) => {
         <div
             className="flex flex-row flex-nowrap items-stretch justify-start font-normal leading-[1.38462] animate-fade-out"
             style={{ position: "relative" }}
+            {...props}
         >
             {show && (
                 <>
@@ -203,40 +249,52 @@ export const AuthFeedback = ({ show, status, text }: AuthFeedbackProps) => {
     )
 }
 
-export const AuthFooter = ({ children }: AuthFooterProps) => {
+export const AuthFooter = ({ children, ...props }: AuthProps) => {
     return (
-        <div className="flex items-center justify-between mt-[-.5rem] pt-[.5rem] bg-[linear-gradient(rgba(0,0,0,0.03),rgba(0,0,0,0.03)),linear-gradient(rgb(255,255,255),rgb(255,255,255))]">
+        <div className="flex items-center justify-between mt-[-.5rem] pt-[.5rem] bg-[linear-gradient(rgba(0,0,0,0.03),rgba(0,0,0,0.03)),linear-gradient(rgb(255,255,255),rgb(255,255,255))]"
+            {...props}
+        >
             {children}
         </div>
     )
 }
-export const AuthFooterForgotPassword = ({ linkHref, text }: AuthFooterProps) => {
+export const AuthFooterForgotPassword = ({ href, text, ...props }: AuthFooterProps) => {
     return (
         <div className="m-auto py-4">
-            <a href={linkHref} className="ml-1 font-medium text-[0.8125rem] text-[var(--primary-color)] leading-[1.38462] cursor-pointer no-underline hover:underline">
+            <a
+                href={href}
+                className="ml-1 font-medium text-[0.8125rem] text-[var(--primary-color)] leading-[1.38462] cursor-pointer no-underline hover:underline"
+                {...props}
+            >
                 {text}
             </a>
         </div>
     )
 }
-export const AuthFooterTextWithLink = ({ text, linkHref, linkText }: AuthFooterProps) => {
+export const AuthFooterTextWithLink = ({ text, href, linkText, ...props }: AuthFooterProps) => {
     return (
         <div className="first-of-type:p-[1rem_2rem] m-[0_auto]">
             <span className="m-0 text-[0.8125rem] text-[rgb(116,118,134)] font-normal leading-[1.38462]">{text}</span>
-            <a href={linkHref} className="ml-1 font-medium text-[0.8125rem] text-[var(--primary-color)] leading-[1.38462] cursor-pointer no-underline hover:underline">
+            <a
+                href={href}
+                className="ml-1 font-medium text-[0.8125rem] text-[var(--primary-color)] leading-[1.38462] cursor-pointer no-underline hover:underline"
+                {...props}
+            >
                 {linkText}
             </a>
         </div>
     )
 }
 
-export const AuthForm = ({ children, onSubmit }: AuthFormProps) => {
+export const AuthForm = ({ children, onSubmit, ...props }: AuthFormProps) => {
     return (
-        <form className="flex flex-col items-stretch justify-start gap-6"
+        <form
+            className="flex flex-col items-stretch justify-start gap-6"
             onSubmit={(e) => {
                 e.preventDefault();
                 onSubmit?.(e);
             }}
+            {...props}
         >
             {children}
         </form>
@@ -305,25 +363,28 @@ export const AuthInput = ({
     )
 }
 
-export const ContinueWithButtonGrid = ({ children }: AuthProps) => {
+export const ContinueWithButtonGrid = ({ children, ...props }: AuthProps) => {
     const buttonCount = React.Children.count(children);
     const columnCount = Math.min(buttonCount, 5);
     return (
         <div
             className="grid items-stretch gap-2 justify-center"
             style={{ gridTemplateColumns: `repeat(${columnCount}, 1fr)` }}
+            {...props}
         >
             {children}
         </div>
     );
 };
 
-export const ContinueWithButton = ({ label, icon, onClick }: ContinueWithButtonProps) => {
+export const ContinueWithButton = ({ label, icon, onClick, ...props }: ContinueWithButtonProps) => {
     const lastWord = label.trim().split(" ").pop() || "";
     return (
         <button
             onClick={onClick}
-            className="p-[.375rem_.75rem] m-0 text-[rgba(0,0,0,.62)] rounded-[.375rem] relative shadow-[var(--color-shadow-soft)] hover:bg-[var(--hover-bg-soft)]">
+            className="p-[.375rem_.75rem] m-0 text-[rgba(0,0,0,.62)] rounded-[.375rem] relative shadow-[var(--color-shadow-soft)] hover:bg-[var(--hover-bg-soft)]"
+            {...props}
+        >
             <span className="flex flex-row items-center justify-center gap-3 w-full overflow-hidden">
                 <span className="flex-[0_0_1rem]">
                     <span className="w-[1rem] h-auto" >{icon}</span>
@@ -348,17 +409,12 @@ export const OrDivider = () => {
 
 // userProfile
 
-export interface UserProfileProps {
-    children?: React.ReactNode;
-    className?: string;
+export interface UserProfileProps extends React.HTMLAttributes<HTMLDivElement> {
     img?: string;
     email?: string;
 };
-export interface UserProfileInputProps {
-    value: string;
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+export interface UserProfileInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
     label?: string;
-    placeholder?: string;
     maxLength?: number;
     showCounter?: boolean;
 }
@@ -532,13 +588,16 @@ export const UserProfileAvatarSection = ({ text, img, email, onChangeImage }: Us
 
 
 
-export const UserProfileFormWrapper = ({ children }: UserProfileProps) => (
-    <div className="mt-0 rounded-none p-[1rem_1rem_2.5rem]">
+export const UserProfileFormWrapper = ({ children, ...props }: UserProfileProps) => (
+    <div
+        className="mt-0 rounded-none p-[1rem_1rem_2.5rem]"
+        {...props}
+    >
         {children}
     </div>
 );
 
-export const UserProfileInput = ({ value, onChange, label, maxLength = 20, placeholder = "", showCounter = false }: UserProfileInputProps) => {
+export const UserProfileInput = ({ style, value, onChange, label, maxLength = 20, placeholder = "", showCounter = false, ...props }: UserProfileInputProps) => {
     return (
         <div className="flex flex-col gap-1">
             <div className="mt-6">
@@ -554,10 +613,13 @@ export const UserProfileInput = ({ value, onChange, label, maxLength = 20, place
                             autoComplete="off"
                             placeholder={placeholder}
                             maxLength={maxLength}
-                            className="h-full relative rounded-[inherit] grow z-[2] border-none bg-transparent p-[.625rem] focus-visible:outline-none focus:shadow-[var(--color-shadow-strong)] hover:shadow-[var(--color-shadow-soft-strong)]" style={{ fontSize: "inherit" }} />
+                            className="h-full relative rounded-[inherit] grow z-[2] border-none bg-transparent p-[.625rem] focus-visible:outline-none focus:shadow-[var(--color-shadow-strong)] hover:shadow-[var(--color-shadow-soft-strong)]"
+                            style={{ fontSize: "inherit", ...style }}
+                            {...props}
+                        />
                     </div>
                     {showCounter && (
-                        <div className="absolute -mt-2 top-auto right-[.625rem] bottom-[.625rem] pointer-events-none text-sm/4 z-[1] text-[var(--text-secondary)] select-none">{value?.length}/{maxLength}</div>
+                        <div className="absolute -mt-2 top-auto right-[.625rem] bottom-[.625rem] pointer-events-none text-sm/4 z-[1] text-[var(--text-secondary)] select-none">{String(value ?? "").length}/{maxLength}</div>
                     )}
                 </div>
             </div>

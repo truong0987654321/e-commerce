@@ -96,7 +96,7 @@ export const userSignIn = async (req: NextRequest) => {
     const accessToken = jwt.sign(
         { id: user.id, role: "user" },
         process.env.ACCESS_TOKEN_SECRET!,
-        { expiresIn: "15m" }
+        { expiresIn: "7d" }
     )
     const refreshToken = jwt.sign(
         { id: user.id, role: "user" },
@@ -140,7 +140,7 @@ export const refreshToken = async (req: NextRequest) => {
     const newAccessToken = jwt.sign(
         { id: decoded.id, role: decoded.role },
         process.env.ACCESS_TOKEN_SECRET!,
-        { expiresIn: "15m" }
+        { expiresIn: "7d" }
     )
     const res = NextResponse.json(
         { success: true, },
@@ -348,7 +348,7 @@ export const sellerSignIn = async (req: NextRequest) => {
     const accessToken = jwt.sign(
         { id: seller.id, role: "seller" },
         process.env.ACCESS_TOKEN_SECRET!,
-        { expiresIn: "15m" }
+        { expiresIn: "7d" }
     )
     const refreshToken = jwt.sign(
         { id: seller.id, role: "seller" },

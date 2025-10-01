@@ -81,3 +81,24 @@ model sellers {
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 }
+
+model siteConfig {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  categories    String[]
+  subCategories Json     @map("sub_categories")
+
+  @@map("site_config")
+}
+
+model discountCodes {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  publicName    String   @map("public_name")
+  discountType  String   @map("discount_type")
+  discountValue Float    @map("discount_value")
+  discountCode  String   @unique @map("discount_code")
+  sellerId      String   @map("seller_id") @db.ObjectId
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@map("discount_codes")
+}

@@ -1,6 +1,6 @@
 :root {
-    --ring: 240 5% 64.9%;
-    --color-cursor: black
+    --color-input-otp-ring: #a1a1aa;
+    --color-input-otp-cursor: #000;
 }
 
 @keyframes caret-blink {

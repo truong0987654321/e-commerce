@@ -21,7 +21,9 @@ import { useCategories } from "@/hooks/use-categories";
 import { ProductDescription } from "./product-description";
 import { SizeSelector } from "./size-selector";
 import { ButtonSave } from "@/components/ui/element/button";
-import { SidebarMain } from "@/components/ui/sidebar/sidebar";
+import { SidebarHeader, SidebarHeaderMessage, SidebarHeaderText, SidebarMain } from "@/components/ui/sidebar/sidebar";
+import { Breadcrumbs } from "../breadcrumbs";
+import { ROUTES } from "@/constants/routes";
 
 export default function CreateProductPage() {
 
@@ -54,7 +56,25 @@ export default function CreateProductPage() {
     const handleSubmit = () => {
         console.log("Product Description HTML:", description);
     };
-    return (
+
+    const pageItems = [
+        { name: "Dashboard", link: ROUTES.DASHBOARD.SELLER_DASHBOARD },
+        { name: "Create Product" },
+    ];
+    return (<>
+        <SidebarHeader
+            className="h-18 border border-x-0 border-t-0 border-solid border-b-[var(--color-sidebar-border-line)]"
+            style={{ paddingBottom: 0, margin: 0 }}
+        >
+            <SidebarHeaderMessage>
+                <SidebarHeaderText>
+                    <div className="flex flex-col gap-1 item">
+                        <h2 className="text-2xl font-semibold text-left">Create Product</h2>
+                        <Breadcrumbs items={pageItems} />
+                    </div>
+                </SidebarHeaderText>
+            </SidebarHeaderMessage>
+        </SidebarHeader>
         <SidebarMain>
             <div className={`mb-16 px-[calc(3*8px)]`} >
                 <div className="flex flex-wrap">
@@ -319,6 +339,7 @@ export default function CreateProductPage() {
                 </div>
             </div >
         </SidebarMain>
+    </>
 
     )
 }

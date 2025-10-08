@@ -1,6 +1,6 @@
 import { AuthenticationError, NotFoundError, ValidationError } from "@/lib/error-hanlder/app-error";
 import { isAuth } from "@/lib/middleware/is-auth";
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
 export const getCategories = async () => {
@@ -71,32 +71,36 @@ export const getDiscountCodes = async (req: NextRequest) => {
         { status: 201 }
     )
 }
-export const deleteDiscountCode = async (req: NextRequest, params: { id: string }) => {
+export const deleteDiscountCodes = async (req: NextRequest) => {
     const { account, role } = await isAuth(req);
-
+    console.log("Auth info:", account, role);
     if (role !== "seller") {
         throw new AuthenticationError("Access denied: Seller only");
     }
-    const id = params.id; // ✅ lấy id từ params
+
+    const body = await req.json();
+    const ids: string[] = body.ids;
     const sellerId = account.id;
 
-    if (!id) {
-        throw new ValidationError("Discount code id is required!");
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+        throw new ValidationError("Discount code ids are required!");
     }
 
-    const discountCodes = await prisma.discountCodes.findUnique({
-        where: { id }, // ✅ lúc này id chắc chắn là string
-        select: { id: true, sellerId: true },
+    const discountCodes = await prisma.discountCodes.findMany({
+        where: { id: { in: ids }, sellerId },
+        select: { id: true },
     });
-    if (!discountCodes) {
-        throw new NotFoundError("Disccount code not found!")
+
+    if (discountCodes.length === 0) {
+        throw new NotFoundError("No discount codes found for deletion!");
     }
-    if (discountCodes.sellerId !== sellerId) {
-        throw new ValidationError("Unauthorized access!")
-    }
-    await prisma.discountCodes.delete({ where: { id } })
-    return NextResponse.json(
-        { message: "Discount code successfully deleted" },
-        { status: 200 }
-    )
-}
+
+    const foundIds = discountCodes.map(dc => dc.id);
+
+    await prisma.discountCodes.deleteMany({ where: { id: { in: foundIds } } });
+
+    return NextResponse.json({
+        message: "Discount codes successfully deleted",
+        deletedIds: foundIds,
+    }, { status: 200 });
+};

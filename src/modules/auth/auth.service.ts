@@ -1,5 +1,5 @@
 import { ValidationError } from "@/lib/error-hanlder/app-error";
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { checkOtpRestrictions, sendOtp, trackOtpRequests, verifyOtp } from "./auth.helper";
 

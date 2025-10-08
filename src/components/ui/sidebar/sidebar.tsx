@@ -10,6 +10,8 @@ import { setSidebarCookie } from "./sidebar.actions";
 
 export const SIDEBAR_COOKIE_KEY = "sidebar-collapsed" as const;
 
+type SidebarButtonTypes = React.ButtonHTMLAttributes<HTMLButtonElement>;
+
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
     collapsed?: boolean;
     setCollapsed?: (open: boolean) => void;
@@ -18,6 +20,7 @@ interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
     label?: string;
     title?: string;
 }
+
 interface SidebarAProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
     exact?: boolean;
     tooltip?: string;
@@ -93,7 +96,7 @@ export const SidebarTrigger = ({ children, className, ...props }: SidebarProps) 
 
 export const SidebarMain = ({ children, ...props }: SidebarProps) => {
     return (
-        <main className="main bg-[var(--sidebar-bg)] min-w-0 relative overflow-auto max-h-[100vh] p-[0_1.5rem]"
+        <main className="main bg-[var(--color-sidebar-bg-1)] min-w-0 relative overflow-auto max-h-[100vh] p-[0_1.5rem]"
             {...props}
         >
             {children}
@@ -105,10 +108,13 @@ export const SidebarMain = ({ children, ...props }: SidebarProps) => {
  * SidebarHeader
  */
 
-export const SidebarHeader = ({ children, ...props }: SidebarProps) => {
+export const SidebarHeader = ({ children, className, ...props }: SidebarProps) => {
     return (
         <div className="header grid sticky top-0">
-            <div className="flex flex-row flex-wrap relative p-[0_0_0_1.5rem] m-[0_0_1.5rem] border-solid border-[transparent] text-[var(--theme-color-info)] bg-[var(--theme-color-info-bg)]"
+            <div className={cn(
+                "flex flex-row flex-wrap relative p-[0_0_0_1.5rem] m-[0_0_1.5rem] text-[var(--color-sidebar-header-text)] bg-[var(--color-sidebar-header-bg)]",
+                className ? className : "h-12"
+            )}
                 {...props}
             >
                 {children}
@@ -150,12 +156,12 @@ export const SidebarHeaderText = ({ children, ...props }: SidebarProps) => {
     )
 }
 
-export const SidebarHeaderButton = ({ children }: SidebarProps) => {
+export const SidebarHeaderButton = ({ children, onClick }: SidebarButtonTypes) => {
     return (
         <div className="flex flex-[1_1_auto] flex-row justify-end">
             <div className="flex flex-row items-center justify-end pr-2">
-                <button className="inline-flex items-center justify-center select-none relative group rounded-[.5rem] py-0 px-4 h-9 cursor-pointer">
-                    <span className="inset-0 absolute pointer-events-none rounded-[inherit] group-hover:before:opacity-[.2] group-hover:before:bg-[var(--theme-color-ink-2)] group-hover:before:inset-0 group-hover:before:absolute group-hover:before:rounded-[inherit]"></span>
+                <button className="inline-flex items-center justify-center select-none relative group rounded-[.5rem] py-0 px-4 h-9 cursor-pointer" onClick={onClick}>
+                    <span className="inset-0 absolute pointer-events-none rounded-[inherit] group-hover:before:opacity-[.2] group-hover:before:bg-[var(--color-sidebar-ink-2)] group-hover:before:inset-0 group-hover:before:absolute group-hover:before:rounded-[inherit]"></span>
                     <span className="z-1 relative"> {children} </span>
                 </button>
             </div>
@@ -172,9 +178,9 @@ export const SidebarHeaderButton = ({ children }: SidebarProps) => {
 
 export const SidebarActivityBar = ({ children }: SidebarProps) => {
     return (
-        <div className="activity-bar relative border-l border-[var(--theme-color-sidebar-border-line)]">
+        <div className="activity-bar relative border-l border-[var(--color-sidebar-border-line)]">
             <div className="h-full flex fixed right-0">
-                <div className="border-[rgba(0,0,0,0)] bg-[var(--theme-color-bg)] box-border flex flex-grow-[1] w-14 z-[61] rounded-none p-1 m-0 transition-[width_.3s_cubic-bezier(.3,0,.8,.15)]">
+                <div className="border-[rgba(0,0,0,0)] bg-[var(--color-sidebar-bg-2)] box-border flex flex-grow-[1] w-14 z-[61] rounded-none p-1 m-0 transition-[width_.3s_cubic-bezier(.3,0,.8,.15)]">
                     <div className="flex flex-col items-center justify-between gap-4 pt-2 w-12">
                         {children}
                     </div>
@@ -206,7 +212,7 @@ export const Sidebar = ({ children, ...props }: SidebarProps) => {
     }
     return (
         <div
-            className="sidebar h-[100vh] sticky z-[12] top-0 shadow-[1px_0_var(--theme-color-sidebar-border-line)]"
+            className="sidebar h-[100vh] sticky z-[12] top-0 shadow-[1px_0_var(--color-sidebar-border-line)]"
             {...props}
         >
             {isSmallScreen && (
@@ -218,12 +224,13 @@ export const Sidebar = ({ children, ...props }: SidebarProps) => {
         </div>
     )
 }
+
 export const SidebarContainer = ({ children, className, ...props }: SidebarProps) => {
     const { collapsed, isSmallScreen } = useSidebar();
     return (
         <div
             className={cn(
-                "sidebar-container bg-[var(--sidebar-bg)] flex flex-col h-[100vh] transition-[width_.3s_cubic-bezier(0.4,0,0.2,1)]",
+                "sidebar-container bg-[var(--color-sidebar-bg-1)] flex flex-col h-[100vh] transition-[width_.3s_cubic-bezier(0.4,0,0.2,1)]",
                 isSmallScreen
                     ? "w-64" // 📌 small screen luôn w-64
                     : collapsed
@@ -245,7 +252,7 @@ export const SidebarLogo = ({ children, href, className }: SidebarAProps) => {
             <a href={href ?? "/"} target="_blank">
                 <div
                     className={cn(
-                        "flex items-center border-b border-solid border-[var(--theme-color-sidebar-border-line)]",
+                        "flex items-center border-b border-solid border-[var(--color-sidebar-border-line)]",
                         collapsed ? "justify-center" : "",
                         className ? className : "py-0 px-5 h-12"
                     )}
@@ -277,7 +284,7 @@ export const SidebarLogoText = ({ children, className, ...props }: SidebarProps)
     return (
         <span
             className={cn(
-                className ? className : "font-bold text-[1.5rem] text-[#5E5E5E] ml-3",
+                className ? className : "font-bold text-[1.5rem] text-[var(--color-sidebar-logo-text)] ml-3",
                 "transition-[opacity_.3s_cubic-bezier(.4,0,.2,1)]"
             )}
             {...props}
@@ -352,7 +359,7 @@ export const SidebarItem = ({
 export const SidebarItemHighlight = ({ children, ...props }: SidebarProps) => {
     return (
         <div
-            className="relative border-b border-solid border-[var(--theme-color-sidebar-border-line)] transition-[height_.3s_cubic-bezier(.4,0,.2,1),padding_.3s_cubic-bezier(.4,0,.2,1)]"
+            className="relative border-b border-solid border-[var(--color-sidebar-border-line)] transition-[height_.3s_cubic-bezier(.4,0,.2,1),padding_.3s_cubic-bezier(.4,0,.2,1)]"
             {...props}
         >
             {children}
@@ -368,7 +375,7 @@ export const SidebarItemTitle = ({ children, title }: SidebarProps) => {
                 {collapsed ? (
                     <></>
                 ) : (
-                    <div className="text-[.75rem]/[1rem] font-normal text-[var(--theme-color-ink-2)] py-[.875rem] px-6">
+                    <div className="text-[.75rem]/[1rem] font-normal text-[var(--color-sidebar-ink-2)] py-[.875rem] px-6">
                         {title}
                     </div>
                 )}
@@ -430,14 +437,14 @@ export const SidebarToggleButton = ({ children }: SidebarProps) => {
     if (isSmallScreen) return
     return (
         <>
-            <div className="border-[var(--theme-color-sidebar-border-line)] border-t m-[0_.625rem]" />
+            <div className="border-[var(--color-sidebar-border-line)] border-t m-[0_.625rem]" />
             <button
                 className="bg-[rgba(0,0,0,0)] border-none cursor-pointer flex flex-none items-center h-11 py-[.625rem] px-6 relative"
                 onClick={handleClick}
             >
                 <div
                     className={cn(
-                        "text-[var(--theme-color-ink-2)] absolute overflow-visible right-[1.375rem] transition-[transform_.3s_cubic-bezier(.4,0,.2,1),color_.1s_cubic-bezier(.4,0,.2,1)]",
+                        "text-[var(--color-sidebar-ink-2)] absolute overflow-visible right-[1.375rem] transition-[transform_.3s_cubic-bezier(.4,0,.2,1),color_.1s_cubic-bezier(.4,0,.2,1)]",
                         collapsed ? "" : "rotate-180"
                     )}
                 >

@@ -3,36 +3,42 @@
 import { AuthBody, AuthButton, AuthCard, AuthContainer, AuthFeedback, AuthFooter, AuthFooterForgotPassword, AuthFooterTextWithLink, AuthForm, AuthHeader, AuthInput } from "@/components/ui/authentication/auth";
 import { API_ROUTES } from "@/constants/api-routes";
 import { ROUTES } from "@/constants/routes";
+import { useAsyncHandler } from "@/hooks/use-async-handler";
+import { useFormHandler } from "@/hooks/use-form-handler";
 import apiClient from "@/lib/api-client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function SignInPage() {
     const router = useRouter();
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+
+    const { form, handleChange } = useFormHandler({
+        email: "",
+        password: "",
+    })
+    const signInHandler = useAsyncHandler();
+
     const [error, setError] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
     const [status, setStatus] = useState<"error" | "success" | "message">()
     const [isShow, setIsShow] = useState(false)
 
-    const handleSignIn = async () => {
-        setIsLoading(true);
-        try {
-            const response = await apiClient.post(API_ROUTES.AUTH.USER_SIGN_IN, { email, password })
-            if (response.status === 200 || response.status === 201) {
-                setError("")
-                router.push("/")
+    const handleSignIn = () => {
+        signInHandler.run(
+            () => apiClient.post(API_ROUTES.AUTH.USER_SIGN_IN, { ...form }),
+            {
+                onSuccess: (response) => {
+                    if (response.status === 200 || response.status === 201) {
+                        setError("")
+                        router.push("/")
+                    }
+                },
+                onError: (message) => {
+                    setStatus("error");
+                    setIsShow(true);
+                    setError(message);
+                }
             }
-        } catch (error: any) {
-            const message =
-                error.response?.data?.message || "Something went wrong! Please try again.";
-            setStatus("error");
-            setIsShow(true);
-            setError(message);
-        } finally {
-            setIsLoading(false);
-        }
+        )
     }
 
     return (
@@ -48,15 +54,17 @@ export default function SignInPage() {
                     // onSubmit={}
                     >
                         <AuthInput
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            name="email"
+                            value={form.email}
+                            onChange={handleChange}
                             type="text"
                             label="Email"
                             placeholder="namlong@gmail.com"
                         />
                         <AuthInput
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            name="password"
+                            value={form.password}
+                            onChange={handleChange}
                             type="password"
                             label="Password"
                             placeholder="********"
@@ -68,7 +76,7 @@ export default function SignInPage() {
                             />
                         </AuthInput>
                         <AuthButton
-                            disabled={isLoading}
+                            disabled={signInHandler.isLoading}
                             onClick={handleSignIn}
                             loadingLabel="Activating..."
                             label="Sign In"

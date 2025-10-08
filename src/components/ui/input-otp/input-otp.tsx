@@ -1,8 +1,27 @@
 import "./input-otp.css"
 
 import React, { useContext, createContext, useState, useRef } from "react";
-import { BaseInputOTPProps, InputOTPContextType, InputOTPProps, InputOTPSlotProps } from "./props";
 import { cn } from "@/lib/utils/cn";
+
+type BaseInputOTPProps = React.HTMLAttributes<HTMLDivElement>;
+
+interface InputOTPProps extends Omit<BaseInputOTPProps, "onChange"> {
+  value?: InputOTPContextType;
+  maxLength: number;
+  onChange?: (otp: string) => void;
+}
+
+interface InputOTPSlotProps extends BaseInputOTPProps {
+  index: number;
+}
+
+interface InputOTPContextType {
+  slots: { char: string; hasFakeCaret: boolean; isActive: boolean }[];
+  handleChange: (value: string) => void;
+  maxLength: number;
+  isFocused: boolean;
+  setIsFocused: (focused: boolean) => void;
+}
 
 const InputOTPContext = createContext<InputOTPContextType | null>(null);
 
@@ -72,12 +91,12 @@ export const InputOTPSlot = ({ index, className }: InputOTPSlotProps) => {
   }
   return (
     <div
-      className={`relative flex h-9 w-9 items-center justify-center outline-0 border-y border-r border-input text-sm shadow-sm transition-all first:rounded-l-md first:border-l last:rounded-r-md  ${isActive ? " z-10 ring-1 ring-[hsl(var(--ring))]" : ""}${className ? ` ${className}` : ''}`}
+      className={`relative flex h-9 w-9 items-center justify-center outline-0 border-y border-r border-input text-sm shadow-sm transition-all first:rounded-l-md first:border-l last:rounded-r-md  ${isActive ? " z-10 ring-1 ring-[var(--color-input-otp-ring)]" : ""}${className ? ` ${className}` : ''}`}
     >
       {char}
       {hasFakeCaret && (
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-          <div className="h-4 w-px animate-caret-blink bg-[var(--color-cursor)] duration-1000" />
+          <div className="h-4 w-px animate-caret-blink bg-[var(--color-input-otp-cursor)] duration-1000" />
         </div>
       )}
     </div>

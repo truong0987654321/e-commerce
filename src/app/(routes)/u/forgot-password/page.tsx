@@ -8,6 +8,8 @@ import { AuthBody, AuthButton, AuthCard, AuthContainer, AuthFeedback, AuthFooter
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp/input-otp";
 import { ROUTES } from "@/constants/routes";
 import { StepCircle, StepLabel, StepProvider } from "@/components/ui/step/step";
+import { useAsyncHandler } from "@/hooks/use-async-handler";
+import { useFormHandler } from "@/hooks/use-form-handler";
 
 export default function ForgotPasswordPage() {
     const router = useRouter();
@@ -18,12 +20,20 @@ export default function ForgotPasswordPage() {
         { key: "reset", label: "Set Password" },
     ];
     const [step, setStep] = useState<"email" | "otp" | "reset">("email");
+
+    const { form, handleChange, resetForm } = useFormHandler({
+        email: "",
+        password: "",
+    })
+
+    const forgotPasswordHandler = useAsyncHandler();
+    const verifyOtpHandler = useAsyncHandler();
+    const resetPasswordHandler = useAsyncHandler();
+    const resendOtpHandler = useAsyncHandler();
+
     const [otp, setOtp] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
     const [canResend, setCanResend] = useState(true);
     const [timer, setTimer] = useState(60);
-    const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
     const [status, setStatus] = useState<"error" | "success" | "message">()
     const [isShow, setIsShow] = useState(false)
@@ -43,46 +53,46 @@ export default function ForgotPasswordPage() {
     }
 
     const handleForgotPassword = async () => {
-        setIsLoading(true);
-        try {
-            const response = await apiClient.post(API_ROUTES.AUTH.USER_FORGOT_PASSWORD, { email })
-            if (response.status === 200 || response.status === 201) {
-                setStep("otp")
-                setCanResend(false)
-                setError("")
-                startResendTimer()
+        forgotPasswordHandler.run(
+            () => apiClient.post(API_ROUTES.AUTH.USER_FORGOT_PASSWORD, { email: form.email }),
+            {
+                onSuccess: (response) => {
+                    if (response.status === 200 || response.status === 201) {
+                        setStep("otp")
+                        setCanResend(false)
+                        setError("")
+                        startResendTimer()
+                    }
+                },
+                onError: (message) => {
+                    setStatus("error");
+                    setIsShow(true);
+                    setError(message);
+                }
             }
-        } catch (error: any) {
-            const message =
-                error.response?.data?.message || "Something went wrong! Please try again.";
-            setStatus("error");
-            setIsShow(true);
-            setError(message);
-        } finally {
-            setIsLoading(false);
-        }
+        )
     }
 
     const handleVerifyOtp = async () => {
-        setIsLoading(true);
-        try {
-            const response = await apiClient.post(API_ROUTES.AUTH.USER_VERIFY_FORGOT_PASSWORD, { email, otp })
-            if (response.status === 200 || response.status === 201) {
-                setStep("reset")
-                setError("")
+        verifyOtpHandler.run(
+            () => apiClient.post(API_ROUTES.AUTH.USER_VERIFY_FORGOT_PASSWORD, { email: form.email, otp }),
+            {
+                onSuccess: (response) => {
+                    if (response.status === 200 || response.status === 201) {
+                        setStep("reset")
+                        setError("")
+                    }
+                },
+                onError: (message) => {
+                    setStatus("error");
+                    setIsShow(true);
+                    setError(message);
+                }
             }
-        } catch (error: any) {
-            const message =
-                error.response?.data?.message || "Something went wrong! Please try again.";
-            setStatus("error");
-            setIsShow(true);
-            setError(message);
-        } finally {
-            setIsLoading(false);
-        }
+        )
     }
     const validateForm = () => {
-        if (password.length < 6) {
+        if (form.password.length < 6) {
             return "Password must be at least 6 characters"
         }
 
@@ -90,52 +100,54 @@ export default function ForgotPasswordPage() {
     }
 
     const handleResetPassword = async () => {
-        setIsLoading(true)
         const validationError = validateForm();
         if (validationError) {
             setStatus("error")
             setIsShow(true)
             setError(validationError);
-            setIsLoading(false)
             return;
         }
-        try {
-            const response = await apiClient.post(API_ROUTES.AUTH.USER_RESET_PASSWORD, { email, new_password: password })
-            if (response.status === 200 || response.status === 201) {
-                setError("")
-                router.push(ROUTES.AUTH.USER_SIGN_IN)
+        resetPasswordHandler.run(
+            () => apiClient.post(API_ROUTES.AUTH.USER_RESET_PASSWORD, { email: form.email, new_password: form.password }),
+            {
+                onSuccess: (response) => {
+                    if (response.status === 200 || response.status === 201) {
+                        setError("")
+                        router.push(ROUTES.AUTH.USER_SIGN_IN)
+                    }
+                },
+                onError: (message) => {
+                    setStatus("error");
+                    setIsShow(true);
+                    setError(message);
+                }
             }
-        } catch (error: any) {
-            const message =
-                error.response?.data?.message || "Something went wrong! Please try again.";
-            setStatus("error");
-            setIsShow(true);
-            setError(message);
-        } finally {
-            setIsLoading(false);
-        }
+        )
     }
     const handleOTPChange = (value: string) => {
         setOtp(value)
     };
     const resendOtp = async () => {
-        if (!canResend) return;
-        try {
-            const response = await apiClient.post(API_ROUTES.AUTH.USER_VERIFY_FORGOT_PASSWORD, { email })
-            if (response.status === 200 || response.status === 201) {
-                setCanResend(false);
-                setError("");
-                setIsShow(true);
-                setTimer(60);
-                startResendTimer();
+        if (!canResend) return
+        resendOtpHandler.run(
+            () => apiClient.post(API_ROUTES.AUTH.USER_VERIFY_FORGOT_PASSWORD, { email: form.email, otp }),
+            {
+                onSuccess: (response) => {
+                    if (response.status === 200 || response.status === 201) {
+                        setCanResend(false);
+                        setError("");
+                        setIsShow(true);
+                        setTimer(60);
+                        startResendTimer();
+                    }
+                },
+                onError: (message) => {
+                    setStatus("error");
+                    setIsShow(true);
+                    setError(message);
+                }
             }
-        } catch (error: any) {
-            const message =
-                error.response?.data?.message || "Something went wrong! Please try again.";
-            setStatus("error");
-            setIsShow(true);
-            setError(message);
-        }
+        )
     }
 
     return (
@@ -158,8 +170,9 @@ export default function ForgotPasswordPage() {
                             onSubmit={handleForgotPassword}
                         >
                             <AuthInput
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                name="email"
+                                value={form.email}
+                                onChange={handleChange}
                                 type="text"
                                 label="Email"
                                 placeholder="namlong@gmail.com"
@@ -171,7 +184,7 @@ export default function ForgotPasswordPage() {
                                 />
                             </AuthInput>
                             <AuthButton
-                                disabled={isLoading}
+                                disabled={forgotPasswordHandler.isLoading}
                                 loadingLabel="Sending OTP..."
                                 label="Submit"
                             />
@@ -201,7 +214,7 @@ export default function ForgotPasswordPage() {
 
                             <AuthButton
                                 onClick={handleVerifyOtp}
-                                disabled={isLoading}
+                                disabled={verifyOtpHandler.isLoading}
                                 loadingLabel="Verifying..."
                                 label="Verify OTP"
                             />
@@ -222,14 +235,14 @@ export default function ForgotPasswordPage() {
                     </React.Fragment>
                 )}
                 {step === "reset" && (
-
                     <AuthBody>
                         <AuthForm
                             onSubmit={handleResetPassword}
                         >
                             <AuthInput
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+                                name="password"
+                                value={form.password}
+                                onChange={handleChange}
                                 type="password"
                                 label="New Password"
                                 placeholder="******"
@@ -241,7 +254,7 @@ export default function ForgotPasswordPage() {
                                 />
                             </AuthInput>
                             <AuthButton
-                                disabled={isLoading}
+                                disabled={resetPasswordHandler.isLoading}
                                 loadingLabel="Resetting..."
                                 label="Reset Password"
                             />

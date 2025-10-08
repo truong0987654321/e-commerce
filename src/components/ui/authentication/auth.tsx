@@ -1,13 +1,73 @@
 import "./auth.css"
 
 import { cn } from "@/lib/utils/cn"
-import { AuthButtonProps, AuthFeedbackProps, AuthFooterProps, AuthFormProps, AuthHeaderProps, AuthInputProps, AuthProps, ContinueWithButtonProps } from "./props"
 import React, { createContext, useContext, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 
+// Auth Props
+type AuthProps = React.HTMLAttributes<HTMLDivElement>;
+
+type AuthFormProps = React.FormHTMLAttributes<HTMLFormElement>;
+
+interface AuthButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+    label: string;
+    loadingLabel?: string;
+    icon?: React.ReactNode;
+}
+
+interface AuthFeedbackProps extends AuthProps {
+    show?: boolean;
+    status?: "error" | "success" | "message";
+    text?: string;
+}
+
+interface AuthInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+    label: string;
+    inputRef?: React.RefObject<HTMLInputElement | null>;
+    onFocusChange?: (isFocused: boolean) => void;
+}
+
+interface AuthFooterProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
+    linkText?: string;
+    text?: string;
+}
+
+interface AuthHeaderProps {
+    title: string,
+    description?: string
+}
+
+interface ContinueWithButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+    label: string;
+    icon: React.ReactNode;
+}
+
+// Svg Props
 interface SvgProps extends React.SVGProps<SVGSVGElement> {
     size?: number;
+}
+
+// userProfile
+
+interface UserProfileProps extends React.HTMLAttributes<HTMLDivElement> {
+    img?: string;
+    email?: string;
+};
+interface UserProfileInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+    label?: string;
+    maxLength?: number;
+    showCounter?: boolean;
+}
+interface UserProfileAvatarSectionProps extends UserProfileProps {
+    text?: string;
+    onChangeImage?: (file: File | null) => void;
+}
+
+interface UserProfileContextType extends UserProfileProps {
+    open?: boolean;
+    setOpen?: (open: boolean) => void;
+    user?: Record<string, unknown> | null;
 }
 
 const Close = ({ size = 16, ...props }: SvgProps) => {
@@ -71,7 +131,6 @@ const CircleCheck = ({ size = 16, ...props }: SvgProps) => {
         </svg>
     )
 }
-
 const CircleExclamation = ({ size = 16, ...props }: SvgProps) => {
     return (
         <svg xmlns="http://www.w3.org/2000/svg"
@@ -103,60 +162,21 @@ const ImageEmpty = ({ size = 16, ...props }: SvgProps) => {
         </svg>
     )
 }
-export const AuthBody = ({ children, className, ...props }: AuthProps) => {
+
+export const AuthContainer = ({ children, className, ...props }: AuthProps) => {
     return (
         <div
             className={cn(
-                "flex flex-col items-stretch justify-start gap-6",
-                className ? className : ""
+                "flex min-w-[25rem] flex-col items-center justify-center",
+                className ? className : "min-h-screen"
             )}
             {...props}
         >
-            {children}
+            <div className="overflow-hidden [@media(min-width:25rem)]:w-[25rem]  w-full rounded-xl shadow-[var(--color-shadow-deep)]"
+            >
+                {children}
+            </div>
         </div>
-    )
-}
-
-export const AuthButton = ({
-    disabled,
-    className,
-    label,
-    loadingLabel = "Activating...",
-    icon,
-    onClick,
-    ...props
-}: AuthButtonProps) => {
-    return (
-        <button
-            type="submit"
-            disabled={disabled}
-            onClick={onClick}
-            className={cn(
-                "m-0 p-[.375rem_.75rem] rounded-[.375rem] font-medium text-[.8125rem] bg-[var(--primary-color)] text-white shadow-[var(--color-shadow-heavy)] hover:opacity-[.8]",
-                disabled ? "cursor-not-allowed opacity-[.8]" : "",
-                className
-            )}
-            {...props}
-        >
-            <span className="flex flex-row items-center justify-center">
-
-                {disabled ? (
-                    <>
-                        <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        <span className="ml-2 text-[.688rem] tracking-widest">{loadingLabel}</span>
-                    </>
-                ) : (
-                    <>
-                        {label}
-                        {icon && (
-                            <span className="ml-2 opacity-[.62] text-[.688rem]">
-                                {icon}
-                            </span>
-                        )}
-                    </>
-                )}
-            </span>
-        </button >
     )
 }
 
@@ -173,20 +193,84 @@ export const AuthCard = ({ children, ...props }: AuthProps) => {
     )
 }
 
-export const AuthContainer = ({ children, className, ...props }: AuthProps) => {
+export const AuthHeader = ({ title, description }: AuthHeaderProps) => {
+    return (
+        <div className="mb-1">
+            <h1 className="font-bold text-[1.0625rem] leading-[1.41176]">{title}</h1>
+            <p className="text-[0.8125rem] font-normal leading-[1.38462] text-[var(--text-secondary)]">{description}</p>
+        </div>
+    )
+}
+
+export const AuthBody = ({ children, className, ...props }: AuthProps) => {
     return (
         <div
             className={cn(
-                "flex min-w-[25rem] flex-col items-center justify-center",
-                className ? className : "min-h-screen"
+                "flex flex-col items-stretch justify-start gap-6",
+                className ? className : ""
             )}
             {...props}
         >
-            <div className="overflow-hidden [@media(min-width:25rem)]:w-[25rem]  w-full rounded-xl shadow-[var(--color-shadow-deep)]"
-            >
-                {children}
-            </div>
+            {children}
         </div>
+    )
+}
+
+export const AuthForm = ({ children, onSubmit, ...props }: AuthFormProps) => {
+    return (
+        <form
+            className="flex flex-col items-stretch justify-start gap-6"
+            onSubmit={(e) => {
+                e.preventDefault();
+                onSubmit?.(e);
+            }}
+            {...props}
+        >
+            {children}
+        </form>
+    )
+}
+
+export const AuthInput = ({
+    children,
+    type,
+    label,
+    className,
+    inputRef,
+    ...props
+}: AuthInputProps) => {
+    const [showPassword, setShowPassword] = useState(false);
+    const isPassword = type === "password";
+
+    return (
+        <div className="flex flex-col justify-between gap-4">
+            <label className="flex font-bold text-[0.8125rem] leading-3">{label}</label>
+            <div className="flex items-stretch justify-center relative flex-col flex-nowrap">
+                <input
+                    ref={inputRef}
+                    type={isPassword && showPassword ? "text" : type}
+                    required
+                    autoComplete="off"
+                    data-feedback="success"
+                    className={cn(
+                        "m-0 p-[.375rem_.75rem] max-h-[2.25rem] w-full font-normal text-[0.8125rem] rounded-[0.375rem] shadow-[var(--color-shadow-border-soft)] outline outline-transparent",
+                        className ? className : "hover:shadow-[var(--color-shadow-soft-strong)] focus:shadow-[var(--color-shadow-strong)]"
+                    )}
+                    {...props}
+                />
+                {isPassword && (
+                    <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="w-9 h-9 m-[0rem_.016rem_0rem_0rem] p-[.25rem_.75rem] cursor-pointer rounded-[.375rem] absolute right-0 text-[rgba(0,0,0,.41)] hover:text-[var(--primary-color)] hover:bg-[var(--hover-bg-soft)]"
+                    >
+                        {showPassword ? <EyeSlash /> : <Eye />}
+                    </button>
+                )}
+            </div>
+            {children}
+        </div>
+
     )
 }
 
@@ -249,117 +333,46 @@ export const AuthFeedback = ({ show, status, text, ...props }: AuthFeedbackProps
     )
 }
 
-export const AuthFooter = ({ children, ...props }: AuthProps) => {
-    return (
-        <div className="flex items-center justify-between mt-[-.5rem] pt-[.5rem] bg-[linear-gradient(rgba(0,0,0,0.03),rgba(0,0,0,0.03)),linear-gradient(rgb(255,255,255),rgb(255,255,255))]"
-            {...props}
-        >
-            {children}
-        </div>
-    )
-}
-export const AuthFooterForgotPassword = ({ href, text, ...props }: AuthFooterProps) => {
-    return (
-        <div className="m-auto py-4">
-            <a
-                href={href}
-                className="ml-1 font-medium text-[0.8125rem] text-[var(--primary-color)] leading-[1.38462] cursor-pointer no-underline hover:underline"
-                {...props}
-            >
-                {text}
-            </a>
-        </div>
-    )
-}
-export const AuthFooterTextWithLink = ({ text, href, linkText, ...props }: AuthFooterProps) => {
-    return (
-        <div className="first-of-type:p-[1rem_2rem] m-[0_auto]">
-            <span className="m-0 text-[0.8125rem] text-[rgb(116,118,134)] font-normal leading-[1.38462]">{text}</span>
-            <a
-                href={href}
-                className="ml-1 font-medium text-[0.8125rem] text-[var(--primary-color)] leading-[1.38462] cursor-pointer no-underline hover:underline"
-                {...props}
-            >
-                {linkText}
-            </a>
-        </div>
-    )
-}
-
-export const AuthForm = ({ children, onSubmit, ...props }: AuthFormProps) => {
-    return (
-        <form
-            className="flex flex-col items-stretch justify-start gap-6"
-            onSubmit={(e) => {
-                e.preventDefault();
-                onSubmit?.(e);
-            }}
-            {...props}
-        >
-            {children}
-        </form>
-    )
-}
-
-export const AuthHeader = ({ title, description }: AuthHeaderProps) => {
-    return (
-        <div className="mb-1">
-            <h1 className="font-bold text-[1.0625rem] leading-[1.41176]">{title}</h1>
-            <p className="text-[0.8125rem] font-normal leading-[1.38462] text-[var(--text-secondary)]">{description}</p>
-        </div>
-    )
-}
-
-export const AuthInput = ({
-    children,
-    type,
-    label,
-    placeholder,
-    pattern,
+export const AuthButton = ({
+    disabled,
     className,
-    value,
-    inputRef,
-    onChange,
-    onFocus,
-    onBlur
-}: AuthInputProps) => {
-    const [showPassword, setShowPassword] = useState(false);
-    const isPassword = type === "password";
-
+    label,
+    loadingLabel = "Activating...",
+    icon,
+    onClick,
+    ...props
+}: AuthButtonProps) => {
     return (
-        <div className="flex flex-col justify-between gap-4">
-            <label className="flex font-bold text-[0.8125rem] leading-3">{label}</label>
-            <div className="flex items-stretch justify-center relative flex-col flex-nowrap">
-                <input
-                    ref={inputRef}
-                    type={isPassword && showPassword ? "text" : type}
-                    required
-                    placeholder={placeholder}
-                    pattern={pattern}
-                    value={value}
-                    onChange={onChange}
-                    onFocus={onFocus}
-                    onBlur={onBlur}
-                    autoComplete="off"
-                    data-feedback="success"
-                    className={cn(
-                        "m-0 p-[.375rem_.75rem] max-h-[2.25rem] w-full font-normal text-[0.8125rem] rounded-[0.375rem] shadow-[var(--color-shadow-border-soft)] outline outline-transparent",
-                        className ? className : "hover:shadow-[var(--color-shadow-soft-strong)] focus:shadow-[var(--color-shadow-strong)]"
-                    )}
-                />
-                {isPassword && (
-                    <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="w-9 h-9 m-[0rem_.016rem_0rem_0rem] p-[.25rem_.75rem] cursor-pointer rounded-[.375rem] absolute right-0 text-[rgba(0,0,0,.41)] hover:text-[var(--primary-color)] hover:bg-[var(--hover-bg-soft)]"
-                    >
-                        {showPassword ? <EyeSlash /> : <Eye />}
-                    </button>
-                )}
-            </div>
-            {children}
-        </div>
+        <button
+            type="submit"
+            disabled={disabled}
+            onClick={onClick}
+            className={cn(
+                "m-0 p-[.375rem_.75rem] rounded-[.375rem] font-medium text-[.8125rem] bg-[var(--primary-color)] text-white shadow-[var(--color-shadow-heavy)] hover:opacity-[.8]",
+                disabled ? "cursor-not-allowed opacity-[.8]" : "",
+                className
+            )}
+            {...props}
+        >
+            <span className="flex flex-row items-center justify-center">
 
+                {disabled ? (
+                    <>
+                        <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        <span className="ml-2 text-[.688rem] tracking-widest">{loadingLabel}</span>
+                    </>
+                ) : (
+                    <>
+                        {label}
+                        {icon && (
+                            <span className="ml-2 opacity-[.62] text-[.688rem]">
+                                {icon}
+                            </span>
+                        )}
+                    </>
+                )}
+            </span>
+        </button >
     )
 }
 
@@ -396,6 +409,45 @@ export const ContinueWithButton = ({ label, icon, onClick, ...props }: ContinueW
     )
 }
 
+export const AuthFooter = ({ children, ...props }: AuthProps) => {
+    return (
+        <div className="flex items-center justify-between mt-[-.5rem] pt-[.5rem] bg-[linear-gradient(rgba(0,0,0,0.03),rgba(0,0,0,0.03)),linear-gradient(rgb(255,255,255),rgb(255,255,255))]"
+            {...props}
+        >
+            {children}
+        </div>
+    )
+}
+
+export const AuthFooterForgotPassword = ({ href, text, ...props }: AuthFooterProps) => {
+    return (
+        <div className="m-auto py-4">
+            <a
+                href={href}
+                className="ml-1 font-medium text-[0.8125rem] text-[var(--primary-color)] leading-[1.38462] cursor-pointer no-underline hover:underline"
+                {...props}
+            >
+                {text}
+            </a>
+        </div>
+    )
+}
+
+export const AuthFooterTextWithLink = ({ text, href, linkText, ...props }: AuthFooterProps) => {
+    return (
+        <div className="first-of-type:p-[1rem_2rem] m-[0_auto]">
+            <span className="m-0 text-[0.8125rem] text-[rgb(116,118,134)] font-normal leading-[1.38462]">{text}</span>
+            <a
+                href={href}
+                className="ml-1 font-medium text-[0.8125rem] text-[var(--primary-color)] leading-[1.38462] cursor-pointer no-underline hover:underline"
+                {...props}
+            >
+                {linkText}
+            </a>
+        </div>
+    )
+}
+
 export const OrDivider = () => {
     return (
         <div className="flex flex-row items-center justify-center">
@@ -406,33 +458,9 @@ export const OrDivider = () => {
     )
 }
 
-
-// userProfile
-
-export interface UserProfileProps extends React.HTMLAttributes<HTMLDivElement> {
-    img?: string;
-    email?: string;
-};
-export interface UserProfileInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-    label?: string;
-    maxLength?: number;
-    showCounter?: boolean;
-}
-export interface UserProfileAvatarSectionProps extends UserProfileProps {
-    text?: string;
-    onChangeImage?: (file: File | null) => void;
-}
-
-export interface UserProfileContextType extends UserProfileProps {
-    open?: boolean;
-    setOpen?: (open: boolean) => void;
-    user?: Record<string, unknown> | null;
-}
-
-
 const UserProfileContext = createContext<UserProfileContextType | undefined>(undefined);
 
-export const useUserProfile = () => {
+const useUserProfile = () => {
     const ctx = useContext(UserProfileContext);
     if (!ctx) throw new Error("useUser must be used inside ActivityBar");
     return ctx;
@@ -530,7 +558,6 @@ export const UserProfileAvatarWrapper = ({ children }: UserProfileProps) => {
     )
 }
 
-
 export const UserProfileAvatarSection = ({ text, img, email, onChangeImage }: UserProfileAvatarSectionProps) => {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -570,7 +597,7 @@ export const UserProfileAvatarSection = ({ text, img, email, onChangeImage }: Us
             <div className="flex items-center justify-center relative">
                 <button
                     onClick={handleClick}
-                    className="inline-block overflow-hidden text-ellipsis whitespace-normal text-center outline-none border-none max-w-[25rem] text-[var(--theme-color-ink-2)] bg-[var(--bg-button)] font-normal rounded-[.875rem] text-sm/7 h-7 min-w-[3.25rem] p-[0_1rem] hover:bg-[var(--bg-button-hover)] hover:text-white"
+                    className="inline-block overflow-hidden text-ellipsis whitespace-normal text-center outline-none border-none max-w-[25rem] text-[var(--color-sidebar-ink-2)] bg-[var(--bg-button)] font-normal rounded-[.875rem] text-sm/7 h-7 min-w-[3.25rem] p-[0_1rem] hover:bg-[var(--bg-button-hover)] hover:text-white"
                 >
                     {text}
                 </button>
@@ -585,8 +612,6 @@ export const UserProfileAvatarSection = ({ text, img, email, onChangeImage }: Us
         </div>
     )
 }
-
-
 
 export const UserProfileFormWrapper = ({ children, ...props }: UserProfileProps) => (
     <div

@@ -9,6 +9,8 @@ import apiClient from "@/lib/api-client";
 import { useState } from "react";
 import { CreateShop } from "./create-shop";
 import { ConnectStripe } from "./connect-stripe";
+import { useFormHandler } from "@/hooks/use-form-handler";
+import { useAsyncHandler } from "@/hooks/use-async-handler";
 // import { useRouter } from "next/navigation";
 
 export default function SignUpPage() {
@@ -21,16 +23,21 @@ export default function SignUpPage() {
     ];
     const [step, setStep] = useState<"create" | "setup" | "bank">("create");
 
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [phone, setPhone] = useState("");
-    const [country, setCountry] = useState("");
-    const [password, setPassword] = useState("");
+    const { form, handleChange } = useFormHandler({
+        name: "",
+        email: "",
+        password: "",
+        phone: "",
+        country: "",
+    })
     const [confirmPassword, setConfirmPassword] = useState("");
 
     const [sellerId, setSellerId] = useState("");
 
-    const [isLoading, setIsLoading] = useState(false);
+    const signUpHandler = useAsyncHandler();
+    const otpHandler = useAsyncHandler();
+    const resendOtpHandler = useAsyncHandler();
+
     const [error, setError] = useState("");
     const [showOtp, setShowOtp] = useState(false);
     const [canResend, setCanResend] = useState(true);
@@ -53,17 +60,17 @@ export default function SignUpPage() {
     }
 
     const validateForm = () => {
-        if (!name || !email || !password || !confirmPassword) {
+        if (!form.name || !form.email || !form.password || !confirmPassword) {
             return "All fields are required!";
         }
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
+        if (!emailRegex.test(form.email)) {
             return "Invalid email format!";
         }
-        if (password !== confirmPassword) {
+        if (form.password !== confirmPassword) {
             return "Passwords do not match!";
         }
-        if (password.length < 6) {
+        if (form.password.length < 6) {
             return "Password must be at least 6 characters"
         }
 
@@ -71,78 +78,80 @@ export default function SignUpPage() {
     }
 
 
-    const handleSignUp = async () => {
-        setIsLoading(true);
+    const handleSignUp = () => {
         const validationError = validateForm();
         if (validationError) {
             setStatus("error")
             setIsShow(true)
             setError(validationError);
-            setIsLoading(false)
             return;
         }
-        try {
-            const response = await apiClient.post(API_ROUTES.AUTH.SELLER_REGISTER, { name, email, password, phone_number: phone, country })
-            if (response.status === 200 || response.status === 201) {
-                setShowOtp(true)
-                setCanResend(false)
-                setTimer(60)
-                startResendTimer()
-                setError("")
+        signUpHandler.run(
+            () => apiClient.post(API_ROUTES.AUTH.SELLER_REGISTER, { ...form, phone_number: form.phone }),
+            {
+                onSuccess: (response) => {
+                    if (response.status === 200 || response.status === 201) {
+                        setShowOtp(true)
+                        setCanResend(false)
+                        setTimer(60)
+                        startResendTimer()
+                        setError("")
+                    }
+                },
+                onError: (message) => {
+                    setStatus("error");
+                    setIsShow(true);
+                    setError(message);
+                }
             }
-        } catch (error: any) {
-            const message =
-                error.response?.data?.message || "Something went wrong! Please try again.";
-            setStatus("error");
-            setIsShow(true);
-            setError(message);
-        } finally {
-            setIsLoading(false);
-        }
+        )
     }
 
     const handleOTPChange = (value: string) => {
         setOtp(value)
     };
 
-    const handleResendOtp = async () => {
-        setIsLoading(true);
-        try {
-            const response = await apiClient.post(API_ROUTES.AUTH.SELLER_VERIFY, { email, otp, password, name, phone_number: phone, country })
-            if (response.status === 200 || response.status === 201) {
-                setError("")
-                setSellerId(response.data.seller.id)
-                setStep("setup")
+    const handleResendOtp = () => {
+        otpHandler.run(
+            () => apiClient.post(API_ROUTES.AUTH.SELLER_VERIFY, { ...form, otp, phone_number: form.phone }),
+            {
+                onSuccess: (response) => {
+                    if (response.status === 200 || response.status === 201) {
+                        setError("")
+                        setSellerId(response.data.seller.id)
+                        setStep("setup")
+                    }
+                },
+                onError: (message) => {
+                    setStatus("error");
+                    setIsShow(true);
+                    setError(message);
+                }
             }
-        } catch (error: any) {
-            const message =
-                error.response?.data?.message || "Something went wrong! Please try again.";
-            setStatus("error");
-            setIsShow(true);
-            setError(message);
-        } finally {
-            setIsLoading(false);
-        }
+        )
     };
 
-    const resendOtp = async () => {
-        if (!canResend) return; // chặn spam
-        try {
-            const response = await apiClient.post(API_ROUTES.AUTH.SELLER_REGISTER, { name, email, password, phone_number: phone, country })
-            if (response.status === 200 || response.status === 201) {
-                setCanResend(false);
-                setError("");
-                setIsShow(true);
-                setTimer(60);
-                startResendTimer();
+    const resendOtp = () => {
+        if (!canResend) return;
+        resendOtpHandler.run(
+            () => apiClient.post(API_ROUTES.AUTH.SELLER_REGISTER, { ...form, otp, phone_number: form.phone }),
+            {
+                onSuccess: (response) => {
+                    if (response.status === 200 || response.status === 201) {
+                        setCanResend(false);
+                        setError("");
+                        setIsShow(true);
+                        setTimer(60);
+                        startResendTimer();
+                    }
+                },
+                onError: (message) => {
+                    setStatus("error");
+                    setIsShow(true);
+                    setError(message);
+                }
             }
-        } catch (error: any) {
-            const message =
-                error.response?.data?.message || "Something went wrong! Please try again.";
-            setStatus("error");
-            setIsShow(true);
-            setError(message);
-        }
+        )
     }
 
     return (
@@ -172,22 +181,25 @@ export default function SignUpPage() {
                                             onSubmit={handleSignUp}
                                         >
                                             <AuthInput
-                                                value={name}
-                                                onChange={(e) => setName(e.target.value)}
+                                                name="name"
+                                                value={form.name}
+                                                onChange={handleChange}
                                                 type="text"
                                                 label="User Name"
                                                 placeholder="namlong"
                                             />
                                             <AuthInput
-                                                value={email}
-                                                onChange={(e) => setEmail(e.target.value)}
+                                                name="email"
+                                                value={form.email}
+                                                onChange={handleChange}
                                                 type="email"
                                                 label="email"
                                                 placeholder="namlong@gmail.com"
                                             />
                                             <AuthInput
-                                                value={phone}
-                                                onChange={(e) => setPhone(e.target.value)}
+                                                name="phone"
+                                                value={form.phone}
+                                                onChange={handleChange}
                                                 type="number"
                                                 label="Phone Number"
                                                 placeholder="+8408123456"
@@ -199,10 +211,10 @@ export default function SignUpPage() {
                                                 <div className="flex items-stretch justify-center relative flex-col flex-nowrap">
                                                     <select
                                                         id="country"
+                                                        name="country"
                                                         className="m-0 p-[.375rem_.75rem] max-h-[2.25rem] w-full font-normal text-[0.8125rem] rounded-[0.375rem] shadow-[var(--color-shadow-border-soft)] outline outline-transparent hover:shadow-[var(--color-shadow-soft-strong)] focus:shadow-[var(--color-shadow-strong)]"
-                                                        value={country}
-                                                        onChange={(e) => setCountry(e.target.value)}
-
+                                                        value={form.country}
+                                                        onChange={handleChange}
                                                     >
                                                         <option value="" disabled>
                                                             Select your country
@@ -220,8 +232,9 @@ export default function SignUpPage() {
                                             </div>
 
                                             <AuthInput
-                                                value={password}
-                                                onChange={(e) => setPassword(e.target.value)}
+                                                name="password"
+                                                value={form.password}
+                                                onChange={handleChange}
                                                 type="password"
                                                 label="Password"
                                                 placeholder="********"
@@ -240,7 +253,7 @@ export default function SignUpPage() {
                                                 />
                                             </AuthInput>
                                             <AuthButton
-                                                disabled={isLoading}
+                                                disabled={signUpHandler.isLoading}
                                                 loadingLabel="Signing up..."
                                                 label="Sign Up"
                                             />
@@ -259,7 +272,7 @@ export default function SignUpPage() {
                             <AuthCard>
                                 <AuthHeader
                                     title="End Your OTP"
-                                    description={`Check ${email} for the OTP to verify your account.`}
+                                    description={`Check ${form.email} for the OTP to verify your account.`}
                                 />
                                 <AuthBody>
                                     <InputOTP
@@ -281,7 +294,7 @@ export default function SignUpPage() {
                                     />
                                     <AuthButton
                                         onClick={handleResendOtp}
-                                        disabled={isLoading}
+                                        disabled={otpHandler.isLoading}
                                         loadingLabel="Verifying..."
                                         label="Verify OTP"
                                     />

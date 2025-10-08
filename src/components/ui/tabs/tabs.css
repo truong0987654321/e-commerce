@@ -1,0 +1,49 @@
+:root {
+    --color-tabs-scrollbar-thumb: #041e4933;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color-tabs-scrollbar-thumb: #ffffff33;
+    }
+}
+
+[data-theme="dark"] {
+    --color-tabs-scrollbar-thumb: #ffffff33;
+}
+
+.tabs-active::after {
+    content: "";
+    position: absolute;
+    width: .75rem;
+    height: .75rem;
+    background-color: #fafafa;
+    border-width: 1px 0 0 1px;
+    border-style: solid;
+}
+
+@media (width >=48rem) {
+    .tabs-active::after {
+        top: 50%;
+        left: 97%;
+        transform: translateY(-50%) rotate(-45deg);
+    }
+}
+
+@media (width < 48rem) {
+    .tabs-active::after {
+        top: 90%;
+        left: 50%;
+        transform: translateX(-50%) rotate(45deg);
+    }
+}
+
+.tabs-container::-webkit-scrollbar {
+    width: .5rem;
+    height: .5rem;
+}
+
+.tabs-container::-webkit-scrollbar-thumb {
+    background-color: var(--color-tabs-scrollbar-thumb);
+    border-radius: .5rem;
+}

@@ -10,26 +10,26 @@ generator client {
 }
 
 datasource db {
-  provider = "mongodb"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model images {
-  id     String  @id @default(auto()) @map("_id") @db.ObjectId
+  id     String  @id @default(uuid())
   fileId String  @map("file_id")
   url    String
-  userId String? @unique @map("user_id") @db.ObjectId
-  shopId String? @unique @map("shop_id") @db.ObjectId
+  userId String? @unique @map("user_id")
+  shopId String? @unique @map("shop_id")
   users  users?  @relation(fields: [userId], references: [id])
   shops  shops?  @relation(fields: [shopId], references: [id])
 }
 
 model users {
-  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  id          String        @id @default(uuid())
   name        String
   email       String        @unique
   password    String?
-  following   String[]
+  following   String[] // dùng Postgres array type
   avatar      images?
   createdAt   DateTime      @default(now()) @map("created_at")
   updatedAt   DateTime      @updatedAt @map("updated_at")
@@ -37,21 +37,21 @@ model users {
 }
 
 model shopReviews {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String   @map("user_id") @db.ObjectId
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
   user      users    @relation(fields: [userId], references: [id])
   rating    Float
   review    String?
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
-  shopId    String?  @map("shopId") @db.ObjectId
+  shopId    String?  @map("shop_id")
   shops     shops?   @relation(fields: [shopId], references: [id])
 
   @@map("shop_reviews")
 }
 
 model shops {
-  id           String        @id @default(auto()) @map("_id") @db.ObjectId
+  id           String        @id @default(uuid())
   name         String
   bio          String?
   category     String
@@ -63,27 +63,28 @@ model shops {
   socialLinks  Json[]        @map("social_links")
   ratings      Float         @default(0)
   reviews      shopReviews[]
-  sellerId     String        @unique @map("seller_id") @db.ObjectId
+  sellerId     String        @unique @map("seller_id")
   sellers      sellers       @relation(fields: [sellerId], references: [id])
   createdAt    DateTime      @default(now()) @map("created_at")
   updatedAt    DateTime      @updatedAt @map("updated_at")
 }
 
 model sellers {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  name        String
-  email       String   @unique
-  phoneNumber String   @map("phone_number")
-  country     String
-  password    String
-  stripeId    String?  @map("stripe_id")
-  shop        shops?
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id            String          @id @default(uuid())
+  name          String
+  email         String          @unique
+  phoneNumber   String          @map("phone_number")
+  country       String
+  password      String
+  stripeId      String?         @map("stripe_id")
+  shop          shops?
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at")
+  discountCodes discountCodes[]
 }
 
 model siteConfig {
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  id            String   @id @default(uuid())
   categories    String[]
   subCategories Json     @map("sub_categories")
 
@@ -91,14 +92,105 @@ model siteConfig {
 }
 
 model discountCodes {
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  id            String   @id @default(uuid())
   publicName    String   @map("public_name")
   discountType  String   @map("discount_type")
   discountValue Float    @map("discount_value")
   discountCode  String   @unique @map("discount_code")
-  sellerId      String   @map("seller_id") @db.ObjectId
+  sellerId      String   @map("seller_id")
+  sellers       sellers  @relation(fields: [sellerId], references: [id])
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 
   @@map("discount_codes")
 }
+
+// mongo db
+// model images {
+//   id     String  @id @default(auto()) @map("_id") @db.ObjectId
+//   fileId String  @map("file_id")
+//   url    String
+//   userId String? @unique @map("user_id") @db.ObjectId
+//   shopId String? @unique @map("shop_id") @db.ObjectId
+//   users  users?  @relation(fields: [userId], references: [id])
+//   shops  shops?  @relation(fields: [shopId], references: [id])
+// }
+
+// model users {
+//   id          String        @id @default(auto()) @map("_id") @db.ObjectId
+//   name        String
+//   email       String        @unique
+//   password    String?
+//   following   String[]
+//   avatar      images?
+//   createdAt   DateTime      @default(now()) @map("created_at")
+//   updatedAt   DateTime      @updatedAt @map("updated_at")
+//   shopReviews shopReviews[]
+// }
+
+// model shopReviews {
+//   id        String   @id @default(auto()) @map("_id") @db.ObjectId
+//   userId    String   @map("user_id") @db.ObjectId
+//   user      users    @relation(fields: [userId], references: [id])
+//   rating    Float
+//   review    String?
+//   createdAt DateTime @default(now()) @map("created_at")
+//   updatedAt DateTime @updatedAt @map("updated_at")
+//   shopId    String?  @map("shopId") @db.ObjectId
+//   shops     shops?   @relation(fields: [shopId], references: [id])
+
+//   @@map("shop_reviews")
+// }
+
+// model shops {
+//   id           String        @id @default(auto()) @map("_id") @db.ObjectId
+//   name         String
+//   bio          String?
+//   category     String
+//   avatar       images?
+//   coverBanner  String?
+//   address      String
+//   openingHours String?       @map("opening_hours")
+//   website      String?
+//   socialLinks  Json[]        @map("social_links")
+//   ratings      Float         @default(0)
+//   reviews      shopReviews[]
+//   sellerId     String        @unique @map("seller_id") @db.ObjectId
+//   sellers      sellers       @relation(fields: [sellerId], references: [id])
+//   createdAt    DateTime      @default(now()) @map("created_at")
+//   updatedAt    DateTime      @updatedAt @map("updated_at")
+// }
+
+// model sellers {
+//   id          String   @id @default(auto()) @map("_id") @db.ObjectId
+//   name        String
+//   email       String   @unique
+//   phoneNumber String   @map("phone_number")
+//   country     String
+//   password    String
+//   stripeId    String?  @map("stripe_id")
+//   shop        shops?
+//   createdAt   DateTime @default(now()) @map("created_at")
+//   updatedAt   DateTime @updatedAt @map("updated_at")
+// }
+
+// model siteConfig {
+//   id            String   @id @default(auto()) @map("_id") @db.ObjectId
+//   categories    String[]
+//   subCategories Json     @map("sub_categories")
+
+//   @@map("site_config")
+// }
+
+// model discountCodes {
+//   id            String   @id @default(auto()) @map("_id") @db.ObjectId
+//   publicName    String   @map("public_name")
+//   discountType  String   @map("discount_type")
+//   discountValue Float    @map("discount_value")
+//   discountCode  String   @unique @map("discount_code")
+//   sellerId      String   @map("seller_id") @db.ObjectId
+//   createdAt     DateTime @default(now()) @map("created_at")
+//   updatedAt     DateTime @updatedAt @map("updated_at")
+
+//   @@map("discount_codes")
+// }

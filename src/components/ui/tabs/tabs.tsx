@@ -1,8 +1,17 @@
 "use client";
+
+import "./tabs.css"
 import { cn } from "@/lib/utils/cn";
-import { createContext, useContext, useState, ReactNode } from "react";
-interface TabsBasicProps extends React.HTMLAttributes<HTMLDivElement> {
-}
+import { createContext, useContext, useState } from "react";
+
+type TabsBasicProps = React.HTMLAttributes<HTMLDivElement>;
+
+type TabsContextType = {
+    value: string;
+    setValue: (v: string) => void;
+    activeClassName?: string;
+    inactiveClassName?: string;
+};
 
 interface TabsProps extends TabsBasicProps {
     defaultValue: string;
@@ -16,13 +25,6 @@ interface TabsContentProps extends TabsBasicProps {
     value: string
 }
 
-type TabsContextType = {
-    value: string;
-    setValue: (v: string) => void;
-    activeClassName?: string;
-    inactiveClassName?: string;
-};
-
 const TabsContext = createContext<TabsContextType | null>(null);
 
 const useTabs = () => {
@@ -31,23 +33,21 @@ const useTabs = () => {
     return context;
 };
 
-export function Tabs({
+export const Tabs = ({
     defaultValue,
     children,
     className,
     activeClassName,
     inactiveClassName,
     ...props
-}: TabsProps) {
+}: TabsProps) => {
     const [value, setValue] = useState(defaultValue);
 
     return (
         <TabsContext.Provider value={{ value, setValue, activeClassName, inactiveClassName }}>
             <div
                 className={cn(
-                    // mobile stack (vertical) 
                     "flex flex-col",
-                    // PC layout ngang: sidebar left + content right
                     "md:flex-row",
                     className
                 )}
@@ -59,7 +59,7 @@ export function Tabs({
     );
 }
 
-export function TabsList({ children, className, ...props }: TabsBasicProps) {
+export const TabsList = ({ children, className, ...props }: TabsBasicProps) => {
     return (
         <div
             className={cn(
@@ -71,12 +71,12 @@ export function TabsList({ children, className, ...props }: TabsBasicProps) {
     );
 }
 
-export function TabsTrigger({
+export const TabsTrigger = ({
     value,
     children,
     className,
     ...props
-}: TabsTriggerProps) {
+}: TabsTriggerProps) => {
     const { value: activeValue, setValue, activeClassName, inactiveClassName } = useTabs();
     const isActive = activeValue === value;
 
@@ -97,12 +97,12 @@ export function TabsTrigger({
     );
 }
 
-export function TabsContent({
+export const TabsContent = ({
     value,
     children,
     className,
     ...props
-}: TabsContentProps) {
+}: TabsContentProps) => {
     const { value: activeValue } = useTabs();
     if (activeValue !== value) return null;
     return (

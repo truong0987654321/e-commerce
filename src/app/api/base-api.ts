@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ErrorMiddleware } from "@/lib/error-hanlder/error-middleware";
 
 export class BaseApi {
     static async handle(req: NextRequest, handler: (req: NextRequest) => Promise<NextResponse>) {

@@ -1,3 +1,4 @@
+"use client"
 
 import { API_ROUTES } from "@/constants/api-routes";
 import apiClient from "@/lib/api-client";

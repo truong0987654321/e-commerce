@@ -1,21 +1,16 @@
 :root {
-    --input: 240 5.9% 90%;
-    --ring: 240 5% 64.9%;
-    --background: #ffffff;
-    --foreground: #171717;
-    --accent: 240 4.8% 95.9%;
     --primary-color: #44b3e3;
-    --hover-bg-soft: rgba(0, 0, 0, 0.03);
-    --success-color: rgba(34, 195, 67, 0.41);
-    --success-focus-color: rgba(34, 195, 67, 0.53);
-    --error-color: rgba(239, 67, 67, 0.41);
-    --text-error: rgb(239, 68, 68);
-    --text-success: rgb(34, 197, 67);
-    --error-focus-color: rgba(239, 67, 67, 0.53);
-    --text-secondary: rgb(116, 118, 134);
+    --hover-bg-soft: #00000008;
+    --success-color: #22c34369;
+    --success-focus-color: #22c34387;
+    --error-color: #ef434369;
+    --text-error: #ef4444;
+    --text-success: #22c543;
+    --error-focus-color: #ef434387;
+    --text-secondary: #747686;
 
-    --bg-button: rgba(11, 87, 208, 0.08);
-    --bg-button-hover: rgb(133 146 163);
+    --bg-button: #0b57d014;
+    --bg-button-hover: #8592a3;
 
     --color-shadow-light: rgba(0, 0, 0, .08) 0px 0px 2px 0px, rgba(25, 28, 33, .06) 0px 1px 2px 0px, rgba(0, 0, 0, .03) 0px 0px 0px 1px;
     --color-shadow-deep: rgba(0, 0, 0, 0.08) 0px 5px 15px 0px, rgba(25, 28, 33, 0.2) 0px 15px 35px -5px, rgba(0, 0, 0, 0.07) 0px 0px 0px 1px;

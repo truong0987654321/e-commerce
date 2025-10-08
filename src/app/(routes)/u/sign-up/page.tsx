@@ -7,16 +7,21 @@ import { API_ROUTES } from "@/constants/api-routes";
 import { ROUTES } from "@/constants/routes";
 import { AuthBody, AuthButton, AuthCard, AuthContainer, AuthFeedback, AuthFooter, AuthFooterTextWithLink, AuthForm, AuthHeader, AuthInput } from "@/components/ui/authentication/auth";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp/input-otp";
+import { useFormHandler } from "@/hooks/use-form-handler";
+import { useAsyncHandler } from "@/hooks/use-async-handler";
 
 export default function SignUpPage() {
     const router = useRouter();
-
-    const [email, setEmail] = useState("");
-    const [name, setName] = useState("");
-    const [password, setPassword] = useState("");
+    const { form, handleChange, resetForm } = useFormHandler({
+        name: "",
+        email: "",
+        password: "",
+    })
     const [confirmPassword, setConfirmPassword] = useState("");
+    const signUpHandler = useAsyncHandler();
+    const resendOtpHandler = useAsyncHandler();
+    const otpHandler = useAsyncHandler();
 
-    const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
     const [showOtp, setShowOtp] = useState(false);
     const [canResend, setCanResend] = useState(true);
@@ -39,17 +44,17 @@ export default function SignUpPage() {
     }
 
     const validateForm = () => {
-        if (!name || !email || !password || !confirmPassword) {
+        if (!form.name || !form.email || !form.password || !confirmPassword) {
             return "All fields are required!";
         }
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
+        if (!emailRegex.test(form.email)) {
             return "Invalid email format!";
         }
-        if (password !== confirmPassword) {
+        if (form.password !== confirmPassword) {
             return "Passwords do not match!";
         }
-        if (password.length < 6) {
+        if (form.password.length < 6) {
             return "Password must be at least 6 characters"
         }
 
@@ -57,77 +62,79 @@ export default function SignUpPage() {
     }
 
 
-    const handleSignUp = async () => {
-        setIsLoading(true);
-
+    const handleSignUp = () => {
         const validationError = validateForm();
         if (validationError) {
             setStatus("error")
             setIsShow(true)
             setError(validationError);
-            setIsLoading(false)
             return;
         }
-        try {
-            const response = await apiClient.post(API_ROUTES.AUTH.USER_REGISTER, { name, email, password })
-            if (response.status === 200 || response.status === 201) {
-                setShowOtp(true)
-                setCanResend(false)
-                setTimer(60)
-                startResendTimer()
-                setError("")
+        signUpHandler.run(
+            () => apiClient.post(API_ROUTES.AUTH.USER_REGISTER, { ...form }),
+            {
+                onSuccess: (response) => {
+                    if (response.status === 200 || response.status === 201) {
+                        setShowOtp(true)
+                        setCanResend(false)
+                        setTimer(60)
+                        startResendTimer()
+                        setError("")
+                    }
+                },
+                onError: (message) => {
+                    setStatus("error");
+                    setIsShow(true);
+                    setError(message);
+                }
             }
-        } catch (error: any) {
-            const message =
-                error.response?.data?.message || "Something went wrong! Please try again.";
-            setStatus("error");
-            setIsShow(true);
-            setError(message);
-        } finally {
-            setIsLoading(false);
-        }
+        )
     }
 
     const handleOTPChange = (value: string) => {
         setOtp(value)
     };
 
-    const handleResendOtp = async () => {
-        setIsLoading(true);
-        try {
-            const response = await apiClient.post(API_ROUTES.AUTH.USER_VERIFY, { email, otp, password, name })
-            if (response.status === 200 || response.status === 201) {
-                setError("")
-                router.push(ROUTES.AUTH.USER_SIGN_IN);
+    const handleResendOtp = () => {
+        otpHandler.run(
+            () => apiClient.post(API_ROUTES.AUTH.USER_VERIFY, { ...form, otp }),
+            {
+                onSuccess: (response) => {
+                    if (response.status === 200 || response.status === 201) {
+                        setError("")
+                        router.push(ROUTES.AUTH.USER_SIGN_IN);
+                    }
+                },
+                onError: (message) => {
+                    setStatus("error");
+                    setIsShow(true);
+                    setError(message);
+                }
             }
-        } catch (error: any) {
-            const message =
-                error.response?.data?.message || "Something went wrong! Please try again.";
-            setStatus("error");
-            setIsShow(true);
-            setError(message);
-        } finally {
-            setIsLoading(false);
-        }
+        )
     };
     const resendOtp = async () => {
         if (!canResend) return; // chặn spam
-        try {
-            const response = await apiClient.post(API_ROUTES.AUTH.USER_REGISTER, { name, email, password })
-            if (response.status === 200 || response.status === 201) {
-                setCanResend(false);
-                setError("");
-                setIsShow(true);
-                setTimer(60);
-                startResendTimer();
+
+        resendOtpHandler.run(
+            () => apiClient.post(API_ROUTES.AUTH.USER_REGISTER, { ...form, otp }),
+            {
+                onSuccess: (response) => {
+                    if (response.status === 200 || response.status === 201) {
+                        setCanResend(false);
+                        setError("");
+                        setIsShow(true);
+                        setTimer(60);
+                        startResendTimer();
+                    }
+                },
+                onError: (message) => {
+                    setStatus("error");
+                    setIsShow(true);
+                    setError(message);
+                }
             }
-        } catch (error: any) {
-            const message =
-                error.response?.data?.message || "Something went wrong! Please try again.";
-            setStatus("error");
-            setIsShow(true);
-            setError(message);
-        }
+        )
     }
     return (
         <AuthContainer>
@@ -144,22 +151,25 @@ export default function SignUpPage() {
                                 onSubmit={handleSignUp}
                             >
                                 <AuthInput
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
+                                    name="name"
+                                    value={form.name}
+                                    onChange={handleChange}
                                     type="text"
                                     label="User Name"
                                     placeholder="namlong"
                                 />
                                 <AuthInput
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
+                                    name="email"
+                                    value={form.email}
+                                    onChange={handleChange}
                                     type="email"
                                     label="email"
                                     placeholder="namlong@gmail.com"
                                 />
                                 <AuthInput
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
+                                    name="password"
+                                    value={form.password}
+                                    onChange={handleChange}
                                     type="password"
                                     label="Password"
                                     placeholder="********"
@@ -179,7 +189,7 @@ export default function SignUpPage() {
                                 </AuthInput>
 
                                 <AuthButton
-                                    disabled={isLoading}
+                                    disabled={signUpHandler.isLoading}
                                     loadingLabel="Signing up..."
                                     label="Sign Up"
                                 />
@@ -198,7 +208,7 @@ export default function SignUpPage() {
                 <AuthCard>
                     <AuthHeader
                         title="End Your OTP"
-                        description={`Check ${email} for the OTP to verify your account.`}
+                        description={`Check ${form.email} for the OTP to verify your account.`}
                     />
                     <AuthBody>
                         <InputOTP
@@ -221,7 +231,7 @@ export default function SignUpPage() {
 
                         <AuthButton
                             onClick={handleResendOtp}
-                            disabled={isLoading}
+                            disabled={otpHandler.isLoading}
                             loadingLabel="Verifying..."
                             label="Verify OTP"
                         />

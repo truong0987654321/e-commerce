@@ -25,6 +25,6 @@ export const API_ROUTES = {
         GET_CATEGORIES: `${PRODUCT_BASE}/get-categories`,
         CREATE_DISCOUNT_CODE: `${PRODUCT_BASE}/create-discount-code`,
         GET_DISCOUNT_CODE: `${PRODUCT_BASE}/get-discount-codes`,
-        DELETE_DISCOUNT_CODE: (id: string) => `${PRODUCT_BASE}/delete-discount-codes/${id}`,
+        DELETE_DISCOUNT_CODE: `${PRODUCT_BASE}/delete-discount-codes`,
     }
 };

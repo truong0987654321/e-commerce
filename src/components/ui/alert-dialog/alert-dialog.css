@@ -1,0 +1,35 @@
+:root {
+    --color-alert-dialog-bg: #ffffff;
+    --color-alert-dialog-text: #000000;
+    --color-alert-dialog-cancel-text: #000000;
+    --color-alert-dialog-cancel-bg: #ffffff;
+    --color-alert-dialog-cancel-bg-hover: #171717;
+    --color-alert-dialog-cancel-border: #171717;
+    --color-alert-dialog-action-text: #ffffff;
+    --color-alert-dialog-action-bg: #171717;
+    --color-alert-dialog-closed-bg-hover: #a4a4a4e6;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color-alert-dialog-bg: #0a0a0a;
+        --color-alert-dialog-text: #ffffff;
+        --color-alert-dialog-cancel-text: #ffffff;
+        --color-alert-dialog-cancel-bg: #ffffff0b;
+        --color-alert-dialog-cancel-bg-hover: white;
+        --color-alert-dialog-cancel-border: #171717;
+        --color-alert-dialog-action-text: #171717;
+        --color-alert-dialog-action-bg: #ffffff;
+        --color-alert-dialog-closed-bg-hover: #ffffffe6;
+    }
+}
+
+[data-theme="dark"] {
+    --color-alert-dialog-bg: #0a0a0a;
+    --color-alert-dialog-text: #ffffff;
+    --color-alert-dialog-cancel-text: #ffffff;
+    --color-alert-dialog-cancel-bg: #ffffff0b;
+    --color-alert-dialog-action-text: #171717;
+    --color-alert-dialog-action-bg: #ffffff;
+    --color-alert-dialog-closed-bg-hover: #ffffffe6;
+}

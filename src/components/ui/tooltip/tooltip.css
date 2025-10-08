@@ -1,16 +1,16 @@
 :root {
-    --color-bg-tooltip: black;
-    --color-text-tooltip: white;
+    --color-tooltip-bg: #000;
+    --color-tooltip-text: #fff;
 }
 
 @media (prefers-color-scheme: dark) {
     :root {
-        --color-bg-tooltip: white;
-        --color-text-tooltip: black;
+        --color-tooltip-bg: #fff;
+        --color-tooltip-text: #000;
     }
 }
 
 [data-theme="dark"] {
-    --color-bg-tooltip: white;
-    --color-text-tooltip: black;
+    --color-tooltip-bg: #fff;
+    --color-tooltip-text: #000;
 }

@@ -4,15 +4,15 @@ import { EllipsisTooltip } from "@/components/ui/ellipsis-tooltip"
 import { LoaderAvatar, LoaderContainer, LoaderContent, LoaderLine } from "@/components/ui/loader/loader"
 import { Sidebar, SidebarContainer, SidebarItem, SidebarItemContainer, SidebarItemContent, SidebarItemContentIcon, SidebarItemContentLabel, SidebarItemHighlight, SidebarItemTitle, SidebarLogo, SidebarLogoIcon, SidebarLogoText, SidebarToggleButton, SidebarToggleButtonIcon } from "@/components/ui/sidebar/sidebar"
 import { ROUTES } from "@/constants/routes"
-import { useSeller } from "@/hooks/use-seller"
+import { useSellerContext } from "@/contexts/seller-context"
 import { ChevronRight, LayoutDashboard, Leaf, ListOrdered, PackageSearch, SquarePlus, WalletCards } from "lucide-react"
 
 export const SidebarWrapper = () => {
-    const { seller, isLoading } = useSeller()
+    const { seller, isLoading } = useSellerContext()
     return (
         <Sidebar>
             <SidebarContainer>
-                <SidebarLogo className="py-0 px-5 h-14">
+                <SidebarLogo className="py-0 px-5 h-18">
                     {!isLoading && seller ? (
                         <>
                             <SidebarLogoIcon>
@@ -20,7 +20,7 @@ export const SidebarWrapper = () => {
                             </SidebarLogoIcon>
                             <SidebarLogoText >
                                 {seller?.shop.name}
-                                <EllipsisTooltip className="font-medium text-xs text-gray-400 mb-2 w-[10.5rem]" >
+                                <EllipsisTooltip className="font-medium text-xs text-[var(--color-sidebar-logo-text)] mb-2 w-[10.5rem]" >
                                     {seller?.shop.address}
                                 </EllipsisTooltip>
                             </SidebarLogoText>

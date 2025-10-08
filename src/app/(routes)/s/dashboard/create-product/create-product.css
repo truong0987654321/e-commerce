@@ -1,49 +1,24 @@
-:root {
-    --scrollbar-thumb: rgba(4, 30, 73, 0.2);
-}
-
-@media (prefers-color-scheme: dark) {
-    :root {
-        --scrollbar-thumb: rgba(255, 255, 255, 0.2);
-    }
-}
-
-[data-theme="dark"] {
-    --scrollbar-thumb: rgba(255, 255, 255, 0.2);
-}
-
-.tabs-active::after {
-    content: "";
-    position: absolute;
-    width: .75rem;
-    height: .75rem;
-    background-color: #fafafa;
-    border-width: 1px 0 0 1px;
+.border-card_after {
+    display: flex;
+    flex-direction: column;
     border-style: solid;
+    border-width: 0;
+    border-color: white;
+    border-radius: .5rem;
+    box-shadow: 0px 1px 2px 0px rgba(60, 64, 67, 0.3), 0px 1px 3px 1px rgba(60, 64, 67, 0.15);
+    position: relative;
+
 }
 
-@media (width >=48rem) {
-    .tabs-active::after {
-        top: 50%;
-        left: 97%;
-        transform: translateY(-50%) rotate(-45deg);
-    }
-}
-
-@media (width < 48rem) {
-    .tabs-active::after {
-        top: 90%;
-        left: 50%;
-        transform: translateX(-50%) rotate(45deg);
-    }
-}
-
-.tabs-container::-webkit-scrollbar {
-    width: .5rem;
-    height: .5rem;
-}
-
-.tabs-container::-webkit-scrollbar-thumb {
-    background-color: var(--scrollbar-thumb);
+.border-card_after::after {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: solid 1px rgba(0, 0, 0, 0);
+    content: "";
+    display: block;
+    pointer-events: none;
     border-radius: .5rem;
 }

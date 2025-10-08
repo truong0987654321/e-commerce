@@ -15,6 +15,7 @@ export const ListItemSkeleton = () => {
         </LoaderContainer>
     );
 }
+
 export const LoaderContainer = ({ children, className, ...props }: Props) => {
     return (
         <div className={cn(
@@ -51,6 +52,7 @@ export const LoaderContent = ({ children, className, ...props }: Props) => {
         </div>
     )
 }
+
 export const LoaderLine = ({ className, ...props }: Props) => {
     return (
         <div className={cn(
@@ -60,6 +62,7 @@ export const LoaderLine = ({ className, ...props }: Props) => {
         />
     )
 }
+
 export const LoaderStatus = () => {
     return (
         <LoaderContainer>

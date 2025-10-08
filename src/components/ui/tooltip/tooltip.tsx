@@ -39,7 +39,7 @@ export const Tooltip = ({
         <TooltipContext.Provider
             value={{ showTooltip, setShowTooltip, tooltip, tooltipPosition, divRef }}
         >
-            <div className="relative inline-flex"
+            <div className="relative"
                 {...props}
             >{children}</div>
 
@@ -133,8 +133,8 @@ export const TooltipContent = ({ children, ...props }: TooltipProps) => {
                 zIndex: 9999,
             }}
             className={cn(
-                "px-2 py-1 bg-black text-white text-xs rounded whitespace-nowrap transition-all duration-150",
-                "after:content-[''] after:absolute after:w-2 after:h-2 after:bg-black",
+                "px-2 py-1 bg-[var(--color-tooltip-bg)] text-[var(--color-tooltip-text)] text-xs rounded whitespace-nowrap transition-all duration-150",
+                "after:content-[''] after:absolute after:w-2 after:h-2 after:bg-[var(--color-tooltip-bg)]",
                 getArrowClass()
             )}
             {...props}

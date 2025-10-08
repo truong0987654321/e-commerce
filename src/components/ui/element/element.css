@@ -1,13 +1,21 @@
 :root {
-    --color-bg-button-icon: rgba(0, 0, 0, 0.6);
+    --color-button-icon-bg: #00000099;
+    --color-button-save-bg-disabled: #0b57d0;
+    --color-button-save-bg-hover: #0b57d0;
+    --color-button-save-bg: #0b57d00f;
+    --color-button-save-text: #0b57d0;
+    --color-button-bg-hover: #ffffff99;
+    --color-button-bg: white;
 }
 
 @media (prefers-color-scheme: dark) {
     :root {
-        --color-bg-button-icon: rgba(255, 255, 255, 0.9);
+        --color-button-icon-bg: #ffffffe6;
+        --color-button-bg: #000000;
     }
 }
 
 [data-theme="dark"] {
-    --color-bg-button-icon: rgba(255, 255, 255, 0.9);
+    --color-button-icon-bg: #ffffffe6;
+    --color-button-bg: #000000;
 }

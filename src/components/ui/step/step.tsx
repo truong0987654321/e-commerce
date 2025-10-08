@@ -25,7 +25,7 @@ interface StepItemProps extends StepProps {
 
 const StepContext = createContext<StepContextType | undefined>(undefined);
 
-export function useStep() {
+const useStep = () => {
     const context = useContext(StepContext);
     if (!context) throw new Error("useStep must be used within StepIndicator");
     return context;
@@ -34,6 +34,7 @@ export function useStep() {
 interface CheckProps extends React.SVGProps<SVGSVGElement> {
     size?: number;
 }
+
 const Check = ({ size = 16, ...props }: CheckProps) => {
     return (
         <svg
@@ -49,7 +50,7 @@ const Check = ({ size = 16, ...props }: CheckProps) => {
     )
 }
 
-export function StepProvider({ steps, step, children, className, ...props }: StepProviderProps) {
+export const StepProvider = ({ steps, step, children, className, ...props }: StepProviderProps) => {
     const activeIndex = steps.findIndex((s) => s.key === step);
 
     return (
@@ -79,7 +80,8 @@ export function StepProvider({ steps, step, children, className, ...props }: Ste
         </StepContext.Provider>
     );
 }
-export function StepCircle({ index = 0, className, ...props }: StepItemProps) {
+
+export const StepCircle = ({ index = 0, className, ...props }: StepItemProps) => {
     const { activeIndex } = useStep();
     const isCompleted = index < activeIndex;
     const isActive = index === activeIndex;
@@ -89,9 +91,9 @@ export function StepCircle({ index = 0, className, ...props }: StepItemProps) {
                 "flex items-center justify-center rounded-full text-sm font-medium transition-all duration-300 ease-in-out",
                 className ? className : "size-8",
                 isActive
-                    ? "bg-[var(--primary-color)] text-white scale-105"
+                    ? "bg-[var(--color-step-primary)] text-white scale-105"
                     : isCompleted
-                        ? "bg-[var(--primary-color)]/30 text-[var(--primary-color)]"
+                        ? "bg-[var(--color-step-primary)]/30 text-[var(--color-step-primary)]"
                         : "bg-gray-200 text-gray-500"
             )}
             {...props}
@@ -100,7 +102,8 @@ export function StepCircle({ index = 0, className, ...props }: StepItemProps) {
         </div>
     )
 }
-export function StepLabel({ index = 0, className, ...props }: StepItemProps) {
+
+export const StepLabel = ({ index = 0, className, ...props }: StepItemProps) => {
     const { steps, activeIndex } = useStep();
     const step = steps[index];
     const isCompleted = index < activeIndex;
@@ -110,9 +113,9 @@ export function StepLabel({ index = 0, className, ...props }: StepItemProps) {
             className={cn(
                 "absolute top-full mt-1 text-[.8125rem] leading-[1.38462] font-medium text-center transition-colors duration-300",
                 className ? className : "break-words",
-                isActive ? "text-[var(--primary-color)]"
+                isActive ? "text-[var(--color-step-primary)]"
                     : isCompleted
-                        ? "text-[var(--primary-color)]/70"
+                        ? "text-[var(--color-step-primary)]/70"
                         : "text-gray-500"
             )}
             {...props}
@@ -122,7 +125,7 @@ export function StepLabel({ index = 0, className, ...props }: StepItemProps) {
     )
 }
 
-function StepLine({ index = 0, className, ...props }: StepItemProps) {
+const StepLine = ({ index = 0, className, ...props }: StepItemProps) => {
     const { activeIndex } = useStep();
     const isCompleted = index < activeIndex;
 
@@ -132,7 +135,7 @@ function StepLine({ index = 0, className, ...props }: StepItemProps) {
                 "flex-1 mx-2 transition-colors duration-500 bg-gray-300",
                 className ? className : "h-[.125rem]",
                 isCompleted
-                    ? "progress before:bg-[var(--primary-color)]/30"
+                    ? "progress before:bg-[var(--color-step-primary)]/30"
                     : ""
             )}
             {...props}

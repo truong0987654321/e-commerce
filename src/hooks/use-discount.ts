@@ -6,7 +6,7 @@ import { API_ROUTES } from "@/constants/api-routes";
 
 export function useDiscount() {
     const [discounts, setDiscounts] = useState<any[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [isError, setIsError] = useState(false);
 
     const fetchDiscounts = useCallback(async () => {
@@ -14,7 +14,7 @@ export function useDiscount() {
         setIsError(false);
         try {
             const res = await apiClient.get(API_ROUTES.PRODUCT.GET_DISCOUNT_CODE);
-            setDiscounts(res.data.discounts ?? []);
+            setDiscounts(res.data.discountCodes ?? []);
         } catch (error) {
             setDiscounts([]);
             setIsError(true);

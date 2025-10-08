@@ -10,7 +10,7 @@ export const ActivityBar = () => {
                 <Tooltip tooltipPosition="left">
                     <TooltipTrigger>
                         <ButtonIcon>
-                            <Mail className="text-[var(--theme-color-ink-2)]" />
+                            <Mail className="text-[var(--color-sidebar-ink-2)]" />
                         </ButtonIcon>
                     </TooltipTrigger>
                     <TooltipContent >
@@ -20,7 +20,7 @@ export const ActivityBar = () => {
                 <Tooltip tooltipPosition="left">
                     <TooltipTrigger>
                         <ButtonIcon>
-                            <Settings className="text-[var(--theme-color-ink-2)]" />
+                            <Settings className="text-[var(--color-sidebar-ink-2)]" />
                         </ButtonIcon>
                     </TooltipTrigger>
                     <TooltipContent >
@@ -30,7 +30,7 @@ export const ActivityBar = () => {
                 <Tooltip tooltipPosition="left">
                     <TooltipTrigger>
                         <ButtonIcon>
-                            <Bell className="text-[var(--theme-color-ink-2)]" />
+                            <Bell className="text-[var(--color-sidebar-ink-2)]" />
                         </ButtonIcon>
                     </TooltipTrigger>
                     <TooltipContent >

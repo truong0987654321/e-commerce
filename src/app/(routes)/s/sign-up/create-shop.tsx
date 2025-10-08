@@ -110,7 +110,7 @@ export const CreateShop = ({ sellerId, setStep }: CreateShopProps) => {
                                 </option>
                                 {shopCategories.map((ct) => (
                                     <option
-                                        className="bg-white text-gray-900 hover:bg-gray-100 checked:bg-[var(--primary-color)] checked:text-white"
+                                        className="bg-white text-gray-900 hover:bg-gray-100 checked:bg-[var(--color-step-primary)] checked:text-white"
                                         key={ct.value} value={ct.value}
                                     >
                                         {ct.label}

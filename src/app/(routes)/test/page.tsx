@@ -8,11 +8,11 @@ export default function TestPage() {
     return (
         <>
             <ButtonIcon>
-                <Mail className="text-[var(--theme-color-ink-2)]" />
+                <Mail className="text-[var(--color-sidebar-ink-2)]" />
             </ButtonIcon>
             <SidebarHeader>
                 <SidebarHeaderButton>
-                    <Mail className="text-[var(--theme-color-ink-2)]" />
+                    <Mail className="text-[var(--color-sidebar-ink-2)]" />
                 </SidebarHeaderButton>
 
             </SidebarHeader>

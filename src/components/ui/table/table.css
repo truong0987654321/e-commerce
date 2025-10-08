@@ -1,0 +1,39 @@
+:root {
+    --color-table-border-bottom: #041e491a;
+    --color-table-bg: #ffffff;
+    --color-table-text: #000000e6;
+    --color-table-bg-hover: #0000000a;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color-table-border-bottom: #041e491a;
+        --color-table-bg: #212121;
+        --color-table-text: #ffffffa3;
+        --color-table-bg-hover: #ffffff0a;
+    }
+}
+
+[data-theme="dark"] {
+    --color-table-border-bottom: #041e491a;
+    --color-table-bg: #212121;
+    --color-table-text: #ffffffa3;
+    --color-table-bg-hover: #ffffff0a;
+}
+
+.table-th {
+    border-bottom-color: var(--color-table-border-bottom);
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    letter-spacing: 0.3px;
+    font-weight: inherit;
+    box-sizing: border-box;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    outline: none;
+    text-align: left;
+}
+
+.font-inherit {
+    font-weight: inherit;
+}

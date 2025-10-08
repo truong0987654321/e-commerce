@@ -3,6 +3,7 @@ import { SidebarWrapper } from "./sidebar-wrapper";
 import { Metadata } from "next";
 import { ActivityBar } from "./activity-bar";
 import "./create-product/create-product.css"
+import { SellerProvider } from "./seller-provider";
 export const metadata: Metadata = {
     title: "Dashboard - NamLong",
     description: "NamLong",
@@ -14,10 +15,12 @@ export default async function SDashboardLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <SidebarProvider>
-            <SidebarWrapper />
-            {children}
-            <ActivityBar />
-        </SidebarProvider>
+        <SellerProvider>
+            <SidebarProvider>
+                <SidebarWrapper />
+                {children}
+                <ActivityBar />
+            </SidebarProvider>
+        </SellerProvider>
     )
 }

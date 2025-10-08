@@ -161,7 +161,7 @@ export default function ImageUploader({ images, setImages }: ImageUploaderProps)
                         onDragLeave={handleDragLeave}
                         onClick={handleClickSelectFile}
                         className={cn(
-                            "flex flex-col items-center justify-center p-12 border border-dashed rounded-lg text-[rgba(82,91,117)] bg-[var(--theme-color-bg)] border-[#cbd0dd] hover:bg-[#f5f7fa]",
+                            "flex flex-col items-center justify-center p-12 border border-dashed rounded-lg text-[rgba(82,91,117)] bg-[var(--color-sidebar-bg-2)] border-[#cbd0dd] hover:bg-[#f5f7fa]",
                             isDragOver ? "border-blue-500 bg-blue-50" : "",
                             isInvalidFile ? "border-red-500 bg-red-100" : ""
                         )}

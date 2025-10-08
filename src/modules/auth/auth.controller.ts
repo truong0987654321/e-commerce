@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { checkOtpRestrictions, sendOtp, trackOtpRequests, validateRegistrationData, verifyOtp } from "./auth.helper";
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import bcrypt from "bcrypt";
 import jwt, { JsonWebTokenError } from "jsonwebtoken"
 import { AuthenticationError, ValidationError } from "@/lib/error-hanlder/app-error";
@@ -264,11 +264,12 @@ export const sellerVerify = async (req: NextRequest) => {
 
 export const createShop = async (req: NextRequest) => {
     const body = await req.json();
-    const { name, bio, address, opening_hours, website, category, seller_id } = body
-    if (!name || !bio || !address || !category || !opening_hours || !seller_id) {
+    console.log("body:", body);
+    const { name, bio, address, opening_hours, website, category, sellerId } = body
+    if (!name || !bio || !address || !category || !opening_hours || !sellerId) {
         throw new ValidationError("All fields are required!")
     }
-    const shopData: any = { name, bio, address, openingHours: opening_hours, category, sellerId: seller_id }
+    const shopData: any = { name, bio, address, openingHours: opening_hours, category, sellerId }
 
     if (website && website.trim() !== "") {
         shopData.website = website
@@ -288,11 +289,11 @@ export const createShop = async (req: NextRequest) => {
 
 export const createStripeConnect = async (req: NextRequest) => {
     const body = await req.json();
-    const { seller_id } = body;
+    const { sellerId } = body;
 
-    if (!seller_id) throw new ValidationError("Seller ID is required!");
+    if (!sellerId) throw new ValidationError("Seller ID is required!");
 
-    const seller = await prisma.sellers.findUnique({ where: { id: seller_id } });
+    const seller = await prisma.sellers.findUnique({ where: { id: sellerId } });
 
     if (!seller) {
         throw new ValidationError("Seller is not available with this id!");
@@ -309,14 +310,14 @@ export const createStripeConnect = async (req: NextRequest) => {
     });
 
     await prisma.sellers.update({
-        where: { id: seller_id },
+        where: { id: sellerId },
         data: { stripeId: account.id },
     });
 
     const accountLink = await stripe.accountLinks.create({
         account: account.id,
-        refresh_url: `${process.env.NEXT_PUBLIC_API_URL}/seller/success`,
-        return_url: `${process.env.NEXT_PUBLIC_API_URL}/seller/success`,
+        refresh_url: `${process.env.NEXT_PUBLIC_API_URL}/s/success`,
+        return_url: `${process.env.NEXT_PUBLIC_API_URL}/s/success`,
         type: "account_onboarding",
     });
 
